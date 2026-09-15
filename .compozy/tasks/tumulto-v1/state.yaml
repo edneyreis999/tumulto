@@ -1,9 +1,9 @@
 # cy-loop-tasks state.yaml -- managed by .agents/skills/cy-loop-tasks/scripts/update-state.py. Do not hand-edit.
 slug: "tumulto-v1"
 created_at: "2026-09-15T21:44:28Z"
-last_updated: "2026-09-15T22:25:04Z"
+last_updated: "2026-09-15T22:47:01Z"
 mode: "tasks"
-iteration: 8
+iteration: 9
 goal_signature: "Executar toda a spec tumulto-v1: adicionar tasks dos itens ampliados, Padrão/Difícil e dashboard JSON; revisar tasks; implementar, verificar e deixar protótipo local pronto sem interromper para perguntas."
 frontend_agent: null
 stacked: false
@@ -23,12 +23,12 @@ qa:
   execution_done: true
 
 review:
-  rounds: 0
-  last_verdict: null
+  rounds: 1
+  last_verdict: "FIX_BEFORE_SHIP"
   ship: false
 
 verify:
-  last_run: "2026-09-15T22:25:04Z"
+  last_run: "2026-09-15T22:47:01Z"
   last_status: "PASS"
 
 delivery:
@@ -94,4 +94,11 @@ iterations:
     action: "QA obligations resolved"
     outcome: "completed"
     memory_written: ["memory/qa-execution.md", "memory/task_07.md", "memory/MEMORY.md"]
+    blockers: []
+  - n: 9
+    timestamp: "2026-09-15T22:47:01Z"
+    phase: "D"
+    action: "peer-review round 1 (FIX_BEFORE_SHIP), findings repaired"
+    outcome: "completed"
+    memory_written: ["memory/peer-review.md", "memory/MEMORY.md"]
     blockers: []
