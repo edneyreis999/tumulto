@@ -204,3 +204,106 @@ test("E2E-006: extended pickups, cross/beam and hazards use real controls", asyn
     path: ".compozy/tasks/tumulto-v1/evidence/task_04/expanded.png",
   });
 });
+async function writeBalance(request, config) {
+  const current = await request.get("/game-design.json");
+  const response = await request.put("/api/game-design", {
+    headers: {
+      Origin: "http://127.0.0.1:4180",
+      "If-Match": current.headers().etag,
+    },
+    data: config,
+  });
+  expect(response.status()).toBe(200);
+}
+test("E2E-007: hard difficulty survives rematch, new visit defaults to standard", async ({
+  page,
+  request,
+}) => {
+  const original = await (await request.get("/game-design.json")).json();
+  const config = structuredClone(original);
+  config.round.durationMs = 10000;
+  config.round.countdownMs = 0;
+  await writeBalance(request, config);
+  try {
+    await page.clock.install();
+    await page.goto("/");
+    await page.locator("#play").click();
+    await page.locator("#difficulty").selectOption("hard");
+    await page.locator("#start").click();
+    await expect(page.locator("#arena")).toBeVisible();
+    await expect(page.locator("#mode-label")).toContainText("Difícil");
+    await page.clock.runFor(10500);
+    await expect(page.locator("#result")).toBeVisible();
+    await page.getByRole("button", { name: "Jogar novamente" }).click();
+    await expect(page.locator("#arena")).toBeVisible();
+    await expect(page.locator("#mode-label")).toContainText("Difícil");
+    await page.reload();
+    await page.locator("#play").click();
+    await expect(page.locator("#difficulty")).toHaveValue("standard");
+  } finally {
+    await writeBalance(request, original);
+  }
+});
+test("E2E-008: dashboard saves disk, retains failed drafts, detects conflicts; matches snapshot until rematch", async ({
+  page,
+  request,
+  context,
+}) => {
+  const original = await (await request.get("/game-design.json")).json();
+  try {
+    await page.goto("/game-design.html");
+    const duration = page.getByLabel("Duração da rodada", { exact: true });
+    await expect(duration).toHaveValue("90000");
+    await duration.fill("9");
+    await expect(page.locator("#save")).toBeDisabled();
+    await duration.fill("10000");
+    await page.getByLabel("Contagem inicial", { exact: true }).fill("0");
+    await page.locator("#save").click();
+    await expect(page.locator("#status")).toHaveText("Tudo salvo");
+    expect(
+      (await (await request.get("/game-design.json")).json()).round.durationMs,
+    ).toBe(10000);
+    await page.reload();
+    await expect(duration).toHaveValue("10000");
+    const game = await context.newPage();
+    await game.clock.install();
+    await game.goto("/");
+    await game.locator("#play").click();
+    await game.locator("#start").click();
+    await expect(game.locator("#arena")).toBeVisible();
+    await expect(game.locator("#timer")).toHaveText("0:10");
+    await duration.fill("20000");
+    await page.locator("#save").click();
+    await expect(page.locator("#status")).toHaveText("Tudo salvo");
+    await game.clock.runFor(10500);
+    await expect(game.locator("#result")).toBeVisible();
+    await game.getByRole("button", { name: "Jogar novamente" }).click();
+    await expect(game.locator("#arena")).toBeVisible();
+    await expect(game.locator("#timer")).toHaveText("0:20");
+    await game.close();
+    await duration.fill("30000");
+    await page.route("**/api/game-design", (route) => route.abort());
+    await page.locator("#save").click();
+    await expect(page.locator("#error")).toContainText("rascunho foi mantido");
+    await expect(duration).toHaveValue("30000");
+    await expect(page.locator("#status")).not.toHaveText("Tudo salvo");
+    await page.unroute("**/api/game-design");
+    const external = structuredClone(original);
+    external.round.durationMs = 40000;
+    await writeBalance(request, external);
+    await page.locator("#save").click();
+    await expect(page.locator("#error")).toContainText("arquivo mudou");
+    await expect(page.locator("#save")).toBeDisabled();
+    await expect(duration).toHaveValue("30000");
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.locator("#reload").click();
+    await expect(duration).toHaveValue("40000");
+    await expect(page.locator("#status")).toHaveText("Tudo salvo");
+    await page.screenshot({
+      path: ".compozy/tasks/tumulto-v1/evidence/task_05/dashboard.png",
+      fullPage: true,
+    });
+  } finally {
+    await writeBalance(request, original);
+  }
+});

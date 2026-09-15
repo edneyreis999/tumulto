@@ -13,6 +13,7 @@ let etag = null;
 let busy = false;
 let conflict = false;
 let dirty = false;
+let loadError = false;
 const status = (title, detail) => {
   $("#status").textContent = title;
   $("#detail").textContent = detail;
@@ -118,7 +119,12 @@ function refresh() {
   $("#reload").disabled = busy;
   $("#export").disabled = !draft || busy;
   if (!busy && draft) {
-    if (conflict)
+    if (loadError)
+      status(
+        "Falha ao carregar",
+        "Seu rascunho foi preservado; tente recarregar.",
+      );
+    else if (conflict)
       status(
         "Arquivo alterado fora deste painel",
         "Exporte seu rascunho antes de recarregar.",
@@ -179,9 +185,11 @@ async function load() {
     draft = structuredClone(config);
     etag = response.headers.get("etag");
     conflict = false;
+    loadError = false;
     for (const [path, { input }] of controls)
       input.value = getValue(config, path);
   } catch (error) {
+    loadError = true;
     showError(error.message);
     status(
       "Falha ao carregar",

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Entregar dificuldades e dashboard de game design integrado"
 type: feature
 complexity: high
@@ -16,9 +16,9 @@ Concluir/verificar código já iniciado em game-design.html, game-design.json, t
 O código parcial do painel foi criado antes da execução do loop; esta tarefa só termina após teste e integração, sem presumir conclusão.
 
 ## Subtarefas
-- [ ] Implementar/produzir o resultado pelo fluxo real previsto.
-- [ ] Executar as verificações próprias e corrigir falhas.
-- [ ] Registrar evidência e pendências de integração na memória antes de concluir.
+- [x] Implementar/produzir o resultado pelo fluxo real previsto.
+- [x] Executar as verificações próprias e corrigir falhas.
+- [x] Registrar evidência e pendências de integração na memória antes de concluir.
 
 ## Contratos
 [_spec.md](_spec.md), [_items.md](_items.md), [_game-design.md](_game-design.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md). ADRs 003/004/005 prevalecem sobre a ADR-001 histórica.

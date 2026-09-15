@@ -1,4 +1,4 @@
-// Metadata shared by the editor, local server and future game loader.
+// Metadata shared by the editor, local server and game loader.
 // Initial balance values live exclusively in game-design.json.
 const number = (path, label, min, max, step = 1, unit = "") => ({
   path,

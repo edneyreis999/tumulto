@@ -12,8 +12,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command:
-      "TUMULTO_DESIGN_PORT=4180 TUMULTO_TEST_MODE=1 node tools/game-design-server.js",
+    command: "TUMULTO_TEST_MODE=1 node tests/server.js",
     url: "http://127.0.0.1:4180",
     reuseExistingServer: false,
   },
