@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Adicionar impulso, centelhas e fluxos à disputa"
 type: feature
 complexity: high
@@ -14,9 +14,9 @@ Três itens básicos utilizáveis em partida real, com bots e HUD correspondente
 Impulso, Centelha simples e Fluxo simples; geração/expiração, tiro no chão, colisão varrida, proteção, conversão e ordem de eventos. Fluxo já usa rotação da regra ampliada, evitando implementar regra superada. Suíte de itens/motor e E2E próprio; equilíbrio global continua no QA.
 
 ## Subtarefas
-- [ ] Implementar/produzir o resultado pelo fluxo real previsto.
-- [ ] Executar as verificações próprias e corrigir falhas.
-- [ ] Registrar evidência e pendências de integração na memória antes de concluir.
+- [x] Implementar/produzir o resultado pelo fluxo real previsto.
+- [x] Executar as verificações próprias e corrigir falhas.
+- [x] Registrar evidência e pendências de integração na memória antes de concluir.
 
 ## Contratos
 [_spec.md](_spec.md), [_items.md](_items.md), [_game-design.md](_game-design.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md). ADRs 003/004/005 prevalecem sobre a ADR-001 histórica.

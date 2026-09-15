@@ -1,3 +1,4 @@
+import { prepareEffects, hopDuration, fireWeapon, advanceProjectiles, applyPickups, generateOtherItem, cellPriority } from './effects.js';
 import { validateConfig } from '../../tools/game-design-schema.js';
 export const DIRECTIONS = ['north', 'east', 'south', 'west'];
 export const DELTAS = { north: [-1, 0], east: [0, 1], south: [1, 0], west: [0, -1] };
@@ -92,15 +93,18 @@ export function stepMatch(state, inputs = {}) {
   if (state.status === 'finished') return { state, events: [] };
   state.events = []; state.tick++;
   if (state.tick >= ticks(state, state.config.round.durationMs)) { finish(state); return { state, events: state.events }; }
+  prepareEffects(state);
   state.items = state.items.filter((i) => i.expiresAtTick === null || i.armedAtTick !== null || state.tick < i.expiresAtTick);
   for (const player of state.players) {
     const input = inputs[player.id] || {};
     if (DELTAS[input.direction]) player.facing = input.direction;
+    fireWeapon(state, player, input);
     if (!player.hop && !active(state, player.stunnedUntilTick) && DELTAS[input.direction]) {
       const [dr, dc] = DELTAS[input.direction], to = { row: player.cell.row + dr, col: player.cell.col + dc };
-      if (to.row >= 0 && to.row < 8 && to.col >= 0 && to.col < 8) player.hop = { from: { ...player.cell }, to, startTick: state.tick, durationTicks: ticks(state, state.config.movement.normalHopMs) };
+      if (to.row >= 0 && to.row < 8 && to.col >= 0 && to.col < 8) player.hop = { from: { ...player.cell }, to, startTick: state.tick, durationTicks: hopDuration(state, player) };
     }
   }
+  advanceProjectiles(state);
   const landingGroups = new Map();
   for (const player of state.players) if (player.hop && state.tick >= player.hop.startTick + player.hop.durationTicks) {
     player.cell = player.hop.to; player.hop = null;
@@ -109,10 +113,12 @@ export function stepMatch(state, inputs = {}) {
   }
   const collectors = [];
   for (const [index, ids] of [...landingGroups].sort(([a], [b]) => a - b)) {
-    const player = state.players[priority(state, ids)[0]]; paint(state, player.cell, player.id);
+    const player = state.players[cellPriority(state, index, ids)[0]]; paint(state, player.cell, player.id);
     const item = state.items.find((i) => cellIndex(i.cell) === index && i.spawnTick < state.tick); if (item) collectors.push({ player, item });
   }
+  applyPickups(state, collectors);
   for (const { player, item } of collectors) if (item.kind === 'seal') convert(state, player, item);
   for (const due of [...state.pendingSealSpawns].sort((a, b) => a.id - b.id)) if (due.dueTick <= state.tick && state.items.filter((i) => i.kind === 'seal').length < state.config.spawns.maxSeals && spawnItem(state, 'seal')) state.pendingSealSpawns = state.pendingSealSpawns.filter((p) => p.id !== due.id);
+  generateOtherItem(state);
   return { state, events: state.events };
 }

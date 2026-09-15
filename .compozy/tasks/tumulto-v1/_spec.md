@@ -351,7 +351,7 @@ Converter cada duração em `ceil(ms * tickRate / 1000)` passos, nunca arredonda
 6. Obter fotografia da propriedade; somar e limpar os conjuntos dos coletores de selos. Consumir selos e enfileirar reposições.
 7. Executar reposições de selo devidas em ordem de `id`; depois a tentativa de outro item. Atualizar estado e emitir eventos imutáveis.
 
-Prioridade `rotating`: ordenar jogadores ciclicamente a partir de `(seed % 4 + t) % 4`. Menor posição vence. `seededRandom`: sortear uma permutação dos envolvidos por disputa, em ordem de casa row-major. Gerar a prioridade de pintura por casa uma única vez no passo e reutilizá-la para aterrissagem e fluxos nessa casa. Empates de alvos usam lista de PlayerIds ordenada antes do sorteio. Proteção por cadeado veta a tomada antes de arbitrar intenções elegíveis. Fluxo prevalece sobre marca básica; selo usa fotografia final. Vencedor da coleta é o definido na aterrissagem, mesmo que sua casa mude depois.
+Prioridade `rotating`: ordenar jogadores ciclicamente a partir de `(seed % 4 + t) % 4`. Menor posição vence. `seededRandom`: sortear uma permutação dos quatro participantes por casa disputada, em ordem row-major, e filtrar os envolvidos. Gerar a prioridade de pintura por casa uma única vez no passo e reutilizá-la para aterrissagem e fluxos nessa casa. Empates de alvos usam lista de PlayerIds ordenada antes do sorteio. Proteção por cadeado veta a tomada antes de arbitrar intenções elegíveis. Fluxo prevalece sobre marca básica; selo usa fotografia final. Vencedor da coleta é o definido na aterrissagem, mesmo que sua casa mude depois.
 
 ### Geometria de impactos
 

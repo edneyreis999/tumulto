@@ -22,5 +22,11 @@ export function decideBot(view, playerId, memory, profile) {
   const legal = order.filter((d) => { const [dr, dc] = DELTAS[d]; return origin.row + dr >= 0 && origin.row + dr < 8 && origin.col + dc >= 0 && origin.col + dc < 8; });
   const direction = legal.find((d) => target && distance({ row: origin.row + DELTAS[d][0], col: origin.col + DELTAS[d][1] }, target) < distance(origin, target)) || legal[0] || null;
   memory = { ...memory, nextDecisionTick: view.tick + ticks(view, profile.decisionMs), direction, target };
-  return { input: { direction, firePressed: false }, memory };
+  const [dr, dc] = DELTAS[direction] || [0,0];
+  const firePressed = Boolean(player.weapon && !player.hop && !active(view,player.stunnedUntilTick) && view.players.some(other => {
+    if(other.id===playerId || active(view,other.protectedUntilTick))return false;
+    const row=other.cell.row-player.cell.row,col=other.cell.col-player.cell.col;
+    return (dr ? col===0 && row*dr>0 : row===0 && col*dc>0) && Math.abs(row)+Math.abs(col)<=profile.fireRange;
+  }));
+  return { input: { direction, firePressed }, memory };
 }

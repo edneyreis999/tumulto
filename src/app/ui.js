@@ -1,3 +1,4 @@
+import { enabledItems } from '../game/effects.js';
 import { createMatch, stepMatch, publicView, pendingCount, ticks, active, playerPosition } from '../game/engine.js';
 import { createBotMemory, decideBot } from '../ai/bots.js';
 import { createKeyboard } from '../input/keyboard.js';
@@ -26,6 +27,7 @@ export function createApp(root, { configLoader = loadConfig, seedFactory = () =>
   <dialog id="diagnostic-dialog" aria-label="Diagnóstico da partida"><h2>Copie o diagnóstico abaixo.</h2><textarea id="diagnostic" readonly aria-label="Diagnóstico da partida"></textarea><button id="diagnostic-close">Voltar</button></dialog>`;
   const $ = (id) => root.querySelector(`#${id}`);
   const on = (id, fn) => $(id).addEventListener('click', fn, { signal: lifecycle.signal });
+  $('item-guide').innerHTML = ['seal', ...enabledItems].map(kind=>`<p>${itemSymbols[kind]} ${itemLabels[kind]}</p>`).join('');
   const keyboard = createKeyboard(document, { enabled: () => phase === 'playing', pause: () => {
     if ($('diagnostic-dialog').open || $('settings-dialog').open || $('exit-dialog').open) return false;
     if (phase === 'paused') { resume(); return true; }
