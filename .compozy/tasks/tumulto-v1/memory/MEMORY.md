@@ -20,4 +20,4 @@ Executar toda a spec localmente via cy-loop-tasks: jogo solo, todos os itens, Pa
 Nenhuma pergunta ao usuário nesta execução. Nitro/TNT atordoam e cogumelos envenenam, sem eliminação, como escolha conservadora documentada.
 
 ## Ready for Next Run
-Tasks 01–07 implementadas/verificadas; round1 de revisão concluído e reparado em ab139f2; seguir round2 incremental. Entrega local é o escopo autorizado, sem remote/PR.
+Tasks 01–07 implementadas/verificadas; revisão round2 SHIP e todos os achados tratados. Código final 7511b1b3297736052342842028432675b151d158. Entrega local pronta, sem remote/PR; links e limites registrados em memory/delivery.md.
