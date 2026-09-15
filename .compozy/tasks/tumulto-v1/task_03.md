@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Concluir legibilidade, acessibilidade e build local"
 type: frontend
 complexity: medium
@@ -14,9 +14,9 @@ Protótipo legível com assets reaproveitados, menus acessíveis, erros e build 
 Concluir render/UI/content/estilos, opções visuais só em memória, recuperação e diagnóstico, README/build. Não exigir arte final. Evidência representativa de foco/viewport e resultado; integração final task_07.
 
 ## Subtarefas
-- [ ] Implementar/produzir o resultado pelo fluxo real previsto.
-- [ ] Executar as verificações próprias e corrigir falhas.
-- [ ] Registrar evidência e pendências de integração na memória antes de concluir.
+- [x] Implementar/produzir o resultado pelo fluxo real previsto.
+- [x] Executar as verificações próprias e corrigir falhas.
+- [x] Registrar evidência e pendências de integração na memória antes de concluir.
 
 ## Contratos
 [_spec.md](_spec.md), [_items.md](_items.md), [_game-design.md](_game-design.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md). ADRs 003/004/005 prevalecem sobre a ADR-001 histórica.
