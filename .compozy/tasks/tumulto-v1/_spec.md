@@ -399,7 +399,7 @@ Composição usa acumulador de tempo e passo fixo; desenho usa `requestAnimation
 | APIs / extensões / agentes | Sem serviço existente | Diagnóstico local e testes; sem MCP, UDS, SDK ou registry de plugins |
 | Rastreamento | Pendente | Texto de issue local; destinos externos não identificados |
 
-**Delete targets:** nenhum. Projeto sem código anterior e sem Git. SD-013, usado pela skill, não exige criar compatibilidade inexistente: não há estado antigo a migrar nem API antiga a manter. Mudanças futuras de schema do JSON autoral precisam preservar dados válidos ou fornecer migração explícita; versão desconhecida é rejeitada sem sobrescrever.
+**Delete targets:** nenhum. O jogo começou sem implementação própria; repositório Git local inicializado durante a execução. SD-013, usado pela skill, não exige criar compatibilidade inexistente: não há estado antigo a migrar nem API antiga a manter. Mudanças futuras de schema do JSON autoral precisam preservar dados válidos ou fornecer migração explícita; versão desconhecida é rejeitada sem sobrescrever.
 
 ## Testing Approach
 
@@ -432,7 +432,7 @@ Sem analytics remoto. “Copiar diagnóstico” em pausa/erro exporta somente ve
 - [_universe.md](_universe.md): evidência do livro, identidade e invenções editoriais.
 - [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md): contratos complementares.
 - [ADR-001](adrs/adr-001-motor-e-primeira-arena.md): motor independente e primeira variante.
-- `src/` e `index.html`: jogo a criar. `package.json`, `game-design.html`, `game-design.json`, `tools/game-design*` e `tests/game-design.test.js`: editor local existente; reutilizar e integrar.
+- `src/` e `index.html`: jogo implementado. `package.json`, `game-design.html`, `game-design.json`, `tools/game-design*` e `tests/game-design.test.js`: editor local integrado e verificado.
 - [_items.md](_items.md) e [_game-design.md](_game-design.md): interações novas e contrato do editor/configuração.
 - PDF `AF_Miolo_Ghork_214Pgs_14x21cm_V3.pdf`: fornecido pelo autor, consultado localmente, não incluído no repositório. Páginas relevantes indexadas em `_universe.md`.
 

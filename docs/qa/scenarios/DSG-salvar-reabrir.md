@@ -6,13 +6,13 @@ persona: Edney
 journey: J-balanceamento-salvo
 expected: Nova leitura mostra o valor salvo e outra aba não sobrescreve sem conflito
 entry_points: http://127.0.0.1:4174/game-design.html
-qa_status: untested
+qa_status: pass
 bug_ids:
 fix_status:
 retest_status:
 fix_commits:
-evidence:
-last_report:
+evidence: docs/qa/evidence/2026-09-15-tumulto-v1/
+last_report: docs/qa/reports/2026-09-15-tumulto-v1.md
 overlaps:
 ---
 

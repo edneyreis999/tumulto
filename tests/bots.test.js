@@ -58,3 +58,29 @@ test("UT-028: bots avoid known hazards and discard vanished targets without read
   assert.notEqual(second.memory.targetKey, `item:${goal.id}`);
   assert.notEqual(second.input.direction, "east");
 });
+test("UT-028 target hold: keep a valid objective through an equal alternative; abandon a dangerous next step", () => {
+  const state = fixture();
+  state.players[1].cell = { row: 3, col: 3 };
+  state.owners.fill(1);
+  const goal = item(state, "impulse", 3, 5);
+  item(state, "impulse", 1, 3);
+  const profile = structuredClone(state.config.bots.standard);
+  profile.mistakeChance = 0;
+  profile.weights.danger = 100;
+  const memory = {
+    ...createBotMemory(4, 1),
+    target: goal.cell,
+    targetKey: `item:${goal.id}`,
+    targetChosenTick: 0,
+  };
+  state.tick = 1;
+  const held = decideBot(publicView(state), 1, memory, profile);
+  assert.equal(held.input.direction, "east");
+  assert.equal(held.memory.targetKey, `item:${goal.id}`);
+  item(state, "nitro", 3, 4);
+  state.tick = held.memory.nextDecisionTick;
+  assert.notEqual(
+    decideBot(publicView(state), 1, held.memory, profile).input.direction,
+    "east",
+  );
+});

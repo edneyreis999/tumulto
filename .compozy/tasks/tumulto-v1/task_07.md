@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Executar QA real do protótipo e painel"
 type: qa-execution
 complexity: high
@@ -14,9 +14,9 @@ Build jogado e painel utilizado de ponta a ponta, defeitos corrigidos e evidênc
 Executar plano task_06 via navegador e API local; verificar Padrão/Difícil, itens/perigos, pausa/resultado/revanche, save real e snapshot, erros, tamanho/foco. QA-M01 pertence aqui: partida completa, quatro personagens, capturas menu/seleção/partida/pausa/resultado e dashboard. Registrar bugs encontrados/fix/reteste; não afirmar aprovação de diversão pelo autor.
 
 ## Subtarefas
-- [ ] Implementar/produzir o resultado pelo fluxo real previsto.
-- [ ] Executar as verificações próprias e corrigir falhas.
-- [ ] Registrar evidência e pendências de integração na memória antes de concluir.
+- [x] Implementar/produzir o resultado pelo fluxo real previsto.
+- [x] Executar as verificações próprias e corrigir falhas.
+- [x] Registrar evidência e pendências de integração na memória antes de concluir.
 
 ## Contratos
 [_spec.md](_spec.md), [_items.md](_items.md), [_game-design.md](_game-design.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md). ADRs 003/004/005 prevalecem sobre a ADR-001 histórica.

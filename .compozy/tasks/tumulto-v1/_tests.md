@@ -1,14 +1,14 @@
 # Tumulto V1 — contrato de testes
 
-Contrato planejado; nenhum caso foi executado contra uma implementação. Fonte: [_spec.md](_spec.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md) e [_dx.md](_dx.md).
+Contrato implementado; resultados e limitações registrados nas memórias das tasks e em docs/qa/reports/2026-09-15-tumulto-v1.md. Fonte: [_spec.md](_spec.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md) e [_dx.md](_dx.md).
 
 ## Estratégia e suites
 
-- `tests/unit/game/`: motor real, tabelas pequenas para regras; Node test runner.
-- `tests/unit/ai/`: controlador real sobre `PublicMatchView`.
+- `tests/engine.test.js` e `tests/items.test.js`: motor real, tabelas pequenas para regras; Node test runner.
+- `tests/bots.test.js`: controlador real sobre `PublicMatchView`.
 - Opções visuais somente em memória; persistência do jogador foi retirada pela ADR-004.
-- `tests/integration/`: composição com relógio, entropia e plataforma controláveis; nenhuma substituição da lógica de jogo.
-- `tests/e2e/`: Playwright, menus/teclado reais e fixtures instaladas somente no bootstrap de teste. Build público não contém essas entradas.
+- `tests/game-design.test.js` e composições nas suites do motor/navegador: composição com relógio, entropia e plataforma controláveis; nenhuma substituição da lógica de jogo.
+- `tests/browser.spec.js`: Playwright, menus/teclado reais e fixtures instaladas somente no bootstrap de teste. Build público não contém essas entradas.
 - `npm run test:unit` executa UT e IT; `npm run test:e2e` executa jornadas. Verificações de JavaScript e build são gates adicionais sem inventar IDs de comportamento.
 
 IDs estáveis e propriedade exclusiva em `_tasks.md`; UT-018 foi retirado pela ADR-004. Subvariações de entrada exercitam o mesmo invariante; não exigir quantidade de testes por arquivo.
@@ -17,35 +17,35 @@ IDs estáveis e propriedade exclusiva em `_tasks.md`; UT-018 foi retirado pela A
 
 | ID / classe | Suite | Entrada e resultado esperado | Owner |
 | --- | --- | --- | --- |
-| UT-001 — state | `game/setup.test.js` | `createMatch({seed:42,humanCharacter:'dam'})` → 64 casas, quatro personagens distintos, só Dam humano, quatro cantos distintos marcados e todos os placares zero | task_01 |
-| UT-002 — boundary | `game/movement.test.js` | No chão em (0,0), direção norte → não sai, não cria salto, mira norte; leste → destino (0,1) | task_01 |
-| UT-003 — ordering | `game/movement.test.js` | Salto leste normal começa em t=1; mudar input para sul no ar não altera destino/duração 36; próximo salto usa sul; input nulo não inicia novo salto | task_01 |
-| UT-004 — state | `game/ownership.test.js` | Casa de P2 tomada por P1 com placares 7 e 9 → dono P1, placares 7 e 9; reentrada própria não apaga nem multiplica | task_01 |
-| UT-005 — happy | `game/scoring.test.js` | P1 possui quatro casas, duas desconectadas; pousa em selo neutro → +5, zero casas próprias; casa/item de P2 permanecem | task_01 |
-| UT-006 — concurrency | `game/conflicts.test.js` | P0 e P1 aterrissam no mesmo selo em t, seed controlada → um coletor conforme prioridade circular; variar t muda prioridade; não há consumo duplo | task_01 |
-| UT-007 — boundary | `game/result.test.js` | Selo com chegada em t=5399 pode pontuar; chegada em t=5400 não pontua; runas pendentes não entram; todos zero → quatro vencedores; novo step de estado final não muda resultado | task_01 |
-| UT-008 — boundary | `game/seals.test.js` | Início tem três selos em posições válidas; consumir um em t=100 gera dueTick=148, não antes; sem casa válida fica pendente e aparece no primeiro tick com vaga; nunca há dois itens na mesma casa | task_01 |
-| UT-009 — idempotency | `game/replay.test.js` | Mesma seed 42 e mesmo log de 600 ticks/inputs → mesmos snapshots e eventos, independentemente de chamadas extras ao render; seed 0 normaliza para 1 | task_01 |
-| UT-010 — ordering | `game/impulse.test.js` | Coleta em t=100 → until=580; recoleta em t=200 → until=680; salto iniciado antes da expiração conserva 20 ticks mesmo depois; próximo usa 36 | task_02 |
-| UT-011 — boundary | `game/spark.test.js` | Inventário 0/1, tentativa aérea, atordoada ou cheia → BR-09; único `firePressed` válido no chão consome 1 e cria 1 projétil; ausência de novo pulso não repete | task_02 |
-| UT-012 — boundary | `game/collision.test.js` | Trajeto atravessa primeiro rival elegível, outro protegido e o próprio emissor → acerta somente primeiro elegível no tempo de contato; variação com alvo em movimento exige colisão varrida; empate exato usa prioridade | task_02 |
-| UT-013 — state | `game/stun.test.js` | Vítima com arma/impulso é atingida em t=100 durante salto → stunUntil=190, protectedUntil=220, carga/impulso removidos, salto termina e pode coletar; não começa outro salto antes de 190 e não recebe novo acerto antes de 220 | task_02 |
-| UT-014 — happy | `game/flow.test.js` | Fluxo leste em (3,3) marca colunas 3–7 da linha 3, toma rivais e mantém item em (3,5); não dispara fluxo/colhe selo nessa outra casa nem altera placar | task_02 |
-| UT-015 — concurrency | `game/conflicts.test.js` | Dois fluxos cruzados e duas coletas de selos em casas distintas no mesmo tick → interseção fica com prioridade circular; conversões usam fotografia final e nenhuma casa paga duas vezes | task_02 |
-| UT-016 — boundary | `game/items.test.js` | Outros itens só tentam surgir em múltiplos de 120 ticks; teto 3; expirados saem aos 720 ticks de vida; espaço inválido não gera item; listas estáveis e amostras controladas de RNG escolhem cada um dos três tipos | task_02 |
-| UT-017 — state | `ai/bots.test.js` | Bot com cinco runas e selo adjacente escolhe selo; objetivo removido replaneja em até 18 ticks; arma/alvo alinhado emite pulso único; view não oferece RNG/futuras entradas; parâmetros físicos vêm do motor comum | task_02 |
+| UT-001 — state | `tests/engine.test.js` | `createMatch({seed:42,humanCharacter:'dam'})` → 64 casas, quatro personagens distintos, só Dam humano, quatro cantos distintos marcados e todos os placares zero | task_01 |
+| UT-002 — boundary | `tests/engine.test.js` | No chão em (0,0), direção norte → não sai, não cria salto, mira norte; leste → destino (0,1) | task_01 |
+| UT-003 — ordering | `tests/engine.test.js` | Salto leste normal começa em t=1; mudar input para sul no ar não altera destino/duração 36; próximo salto usa sul; input nulo não inicia novo salto | task_01 |
+| UT-004 — state | `tests/engine.test.js` | Casa de P2 tomada por P1 com placares 7 e 9 → dono P1, placares 7 e 9; reentrada própria não apaga nem multiplica | task_01 |
+| UT-005 — happy | `tests/engine.test.js` | P1 possui quatro casas, duas desconectadas; pousa em selo neutro → +5, zero casas próprias; casa/item de P2 permanecem | task_01 |
+| UT-006 — concurrency | `tests/engine.test.js` | P0 e P1 aterrissam no mesmo selo em t, seed controlada → um coletor conforme prioridade circular; variar t muda prioridade; não há consumo duplo | task_01 |
+| UT-007 — boundary | `tests/engine.test.js` | Selo com chegada em t=5399 pode pontuar; chegada em t=5400 não pontua; runas pendentes não entram; todos zero → quatro vencedores; novo step de estado final não muda resultado | task_01 |
+| UT-008 — boundary | `tests/engine.test.js` | Início tem três selos em posições válidas; consumir um em t=100 gera dueTick=148, não antes; sem casa válida fica pendente e aparece no primeiro tick com vaga; nunca há dois itens na mesma casa | task_01 |
+| UT-009 — idempotency | `tests/engine.test.js` | Mesma seed 42 e mesmo log de 600 ticks/inputs → mesmos snapshots e eventos, independentemente de chamadas extras ao render; seed 0 normaliza para 1 | task_01 |
+| UT-010 — ordering | `tests/items.test.js` | Coleta em t=100 → until=580; recoleta em t=200 → until=680; salto iniciado antes da expiração conserva 20 ticks mesmo depois; próximo usa 36 | task_02 |
+| UT-011 — boundary | `tests/items.test.js` | Inventário 0/1, tentativa aérea, atordoada ou cheia → BR-09; único `firePressed` válido no chão consome 1 e cria 1 projétil; ausência de novo pulso não repete | task_02 |
+| UT-012 — boundary | `tests/items.test.js` | Trajeto atravessa primeiro rival elegível, outro protegido e o próprio emissor → acerta somente primeiro elegível no tempo de contato; variação com alvo em movimento exige colisão varrida; empate exato usa prioridade | task_02 |
+| UT-013 — state | `tests/items.test.js` | Vítima com arma/impulso é atingida em t=100 durante salto → stunUntil=190, protectedUntil=220, carga/impulso removidos, salto termina e pode coletar; não começa outro salto antes de 190 e não recebe novo acerto antes de 220 | task_02 |
+| UT-014 — happy | `tests/items.test.js` | Fluxo leste em (3,3) marca colunas 3–7 da linha 3, toma rivais e mantém item em (3,5); não dispara fluxo/colhe selo nessa outra casa nem altera placar | task_02 |
+| UT-015 — concurrency | `tests/items.test.js` | Dois fluxos cruzados e duas coletas de selos em casas distintas no mesmo tick → interseção fica com prioridade circular; conversões usam fotografia final e nenhuma casa paga duas vezes | task_02 |
+| UT-016 — boundary | `tests/items.test.js` | Outros itens só tentam surgir em múltiplos de 120 ticks; teto configurado; expirados saem aos 720 ticks de vida; espaço inválido não gera item; listas estáveis e amostras controladas de RNG escolhem cada tipo habilitado no catálogo ampliado | task_02 |
+| UT-017 — state | `tests/items.test.js` | Bot com cinco runas e selo adjacente escolhe selo; objetivo removido replaneja em até 18 ticks; arma/alvo alinhado emite pulso único; view não oferece RNG/futuras entradas; parâmetros físicos vêm do motor comum | task_02 |
 | UT-018 — withdrawn | — | Retirado: persistência do jogador rejeitada na ADR-004; reset de opções é coberto em E2E-005 | — |
 
 ## Integration tests
 
 | ID | Suite | Fronteira e resultado | Owner |
 | --- | --- | --- | --- |
-| IT-001 | `match-loop.test.js` | Composição real cria humano e três controladores, roda fixture sem outros itens e com inputs registrados → há movimento/território/conversão, chega ao resultado e preserva invariantes; não usar vitórias estatísticas como assert | task_01 |
-| IT-002 | `lifecycle.test.js` | Avançar 300 ticks, pausar, avançar relógio externo 20 s → tick/efeitos iguais; blur, aba oculta ou gap >250 ms pausam sem compensação; continuar requer input novo; inclui pausa de contagem | task_01 |
-| IT-003 | `lifecycle.test.js` | Começar/revanche acionados duas vezes e transições menu/partida repetidas → um motor/listener de cada tipo ativo, estado limpo e seleção preservada; reload não restaura rodada | task_01 |
-| IT-004 | `keyboard.test.js` | WASD/setas simultâneos, repeat de Space, foco em botão e saída da área de jogo → prioridade da última direção; disparo é borda de tecla; menus recebem teclado normal; teclas antigas não ficam presas | task_01 |
-| IT-005 | `effects-loop.test.js` | Motor + bots + emissão de feedback em fixture com três tipos de item → humanos/bots coletam pela mesma via; um impacto gera uma notificação, HUD derivado acompanha carga/efeitos; pausa não envelhece cooldown de bot | task_02 |
-| IT-006 | `diagnostics.test.js` | Canvas ausente ou exceção controlada → fase de erro com motor parado e código correto; copiar JSON não expõe campos extras; clipboard negado oferece texto selecionável; recuperação desmonta composição anterior | task_03 |
+| IT-001 | `tests/engine.test.js` | Composição real cria humano e três controladores, roda fixture sem outros itens e com inputs registrados → há movimento/território/conversão, chega ao resultado e preserva invariantes; não usar vitórias estatísticas como assert | task_01 |
+| IT-002 | `tests/browser.spec.js` | Avançar 300 ticks, pausar, avançar relógio externo 20 s → tick/efeitos iguais; blur, aba oculta ou gap >250 ms pausam sem compensação; continuar requer input novo; inclui pausa de contagem | task_01 |
+| IT-003 | `tests/browser.spec.js` | Começar/revanche acionados duas vezes e transições menu/partida repetidas → um motor/listener de cada tipo ativo, estado limpo e seleção preservada; reload não restaura rodada | task_01 |
+| IT-004 | `tests/browser.spec.js` | WASD/setas simultâneos, repeat de Space, foco em botão e saída da área de jogo → prioridade da última direção; disparo é borda de tecla; menus recebem teclado normal; teclas antigas não ficam presas | task_01 |
+| IT-005 | `tests/items.test.js` | Motor + bots + emissão de feedback em fixture com três tipos de item → humanos/bots coletam pela mesma via; um impacto gera uma notificação, HUD derivado acompanha carga/efeitos; pausa não envelhece cooldown de bot | task_02 |
+| IT-006 | `tests/browser.spec.js` | Canvas ausente ou exceção controlada → fase de erro com motor parado e código correto; copiar JSON não expõe campos extras; clipboard negado oferece texto selecionável; recuperação desmonta composição anterior | task_03 |
 
 ## End-to-end tests
 
@@ -101,7 +101,7 @@ Não transformar “divertido” em um teste unitário nem exigir vitória de um
 
 ## Execução e resultados
 
-Todos os casos estão **planejados**. A autoria verifica consistência documental, não passa jogos inexistentes. Cada tarefa registra comando, resultado e evidência ao implementar. Impacto/compatibilidade: [_spec.md — Impact Analysis](_spec.md#impact-analysis--autoridade-única).
+Execução automatizada: 35 testes Node e 10 jornadas Playwright aprovados; IDs agrupados por invariante, sem correspondência artificial de um ID por função. QA real em task_07. Cada tarefa registra comando, resultado e evidência ao implementar. Impacto/compatibilidade: [_spec.md — Impact Analysis](_spec.md#impact-analysis--autoridade-única).
 
 ## Ampliação de itens, bots e editor
 
@@ -120,7 +120,7 @@ Todos os casos estão **planejados**. A autoria verifica consistência documenta
 | IT-007 | `tests/items.test.js`: rodada com recursos/perigos + bots preserva um dono, pontuação por selo e execução até fim | task_04 |
 | IT-008 | `tests/game-design.test.js`: GET→PUT válido→ler disco→novo GET conserva valor e revisão; payload inválido não altera bytes | task_05 |
 | IT-009 | `tests/game-design.test.js`: duas escritas com mesma revisão → uma salva e outra 409; origem alheia rejeitada | task_05 |
-| IT-010 | `tests/config.test.js`: carga inválida falha antes da partida; config nova não altera snapshot de rodada ativa | task_05 |
+| IT-010 | `tests/game-design.test.js`: carga inválida falha antes da partida; config nova não altera snapshot de rodada ativa | task_05 |
 | E2E-006 | `tests/browser.spec.js`: fixture pública somente no servidor de testes → fluxos, cruz/raio, cadeado e perigos têm estado visual e ação reais | task_04 |
 | E2E-007 | `tests/browser.spec.js`: selecionar Difícil→jogar→resultado→revanche mantém perfil; nova visita Padrão | task_05 |
 | E2E-008 | `tests/browser.spec.js`: abrir dashboard→alterar→Salvar→recarregar confirma arquivo; erro preserva rascunho; próxima partida usa config salva | task_05 |
@@ -134,7 +134,7 @@ Todos os casos estão **planejados**. A autoria verifica consistência documenta
 | US-016 e EC-1 | UT-027, UT-028, E2E-007 |
 | US-017 e EC-1 | UT-026, IT-008, E2E-008 |
 | US-017.EC-2 | IT-009, E2E-008 |
-| US-017.EC-3 | IT-008 (falha de arquivo), E2E-008 (falha de rede) |
+| US-017.EC-3 | IT-009 (falha de arquivo), E2E-008 (falha de rede) |
 | US-017.EC-4 | IT-010, E2E-008 |
 
 As suites podem agrupar cenários pelos riscos; registrar IDs no nome dos testes. Fixtures do motor são reais. E2E usa o bootstrap de testes, nunca endpoint/atalho no build distribuído. QA integrada restante: task_07, com planos task_06. Não declarar playtest aprovado pelo autor.

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, rm, chmod } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createDesignServer } from "../tools/game-design-server.js";
@@ -124,4 +124,19 @@ test("IT-010: current match freezes config; next load sees disk edits; invalid d
     loadConfig(`${io.url}/game-design.json`),
     /Configuração inválida/,
   );
+});
+test("IT-008 write failure: permission denied leaves original bytes intact and next save recovers", async (t) => {
+  const io = await local(t),
+    original = await readFile(io.configPath, "utf8");
+  const etag = (await io.read()).headers.get("etag"),
+    config = configuration();
+  config.round.durationMs = 20000;
+  await chmod(path.dirname(io.configPath), 0o500);
+  try {
+    assert.equal((await io.save(config, etag)).status, 500);
+    assert.equal(await readFile(io.configPath, "utf8"), original);
+  } finally {
+    await chmod(path.dirname(io.configPath), 0o700);
+  }
+  assert.equal((await io.save(config, etag)).status, 200);
 });

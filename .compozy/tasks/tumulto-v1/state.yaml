@@ -1,18 +1,18 @@
 # cy-loop-tasks state.yaml -- managed by .agents/skills/cy-loop-tasks/scripts/update-state.py. Do not hand-edit.
 slug: "tumulto-v1"
 created_at: "2026-09-15T21:44:28Z"
-last_updated: "2026-09-15T22:17:04Z"
+last_updated: "2026-09-15T22:25:04Z"
 mode: "tasks"
-iteration: 7
+iteration: 8
 goal_signature: "Executar toda a spec tumulto-v1: adicionar tasks dos itens ampliados, Padrão/Difícil e dashboard JSON; revisar tasks; implementar, verificar e deixar protótipo local pronto sem interromper para perguntas."
 frontend_agent: null
 stacked: false
 
 tasks:
   total: 7
-  completed: ["task_01", "task_02", "task_03", "task_04", "task_05", "task_06"]
+  completed: ["task_01", "task_02", "task_03", "task_04", "task_05", "task_06", "task_07"]
   current: null
-  pending: ["task_07"]
+  pending: []
 
 progress:
   deliverables_complete: false
@@ -20,7 +20,7 @@ progress:
 
 qa:
   report_done: true
-  execution_done: false
+  execution_done: true
 
 review:
   rounds: 0
@@ -28,7 +28,7 @@ review:
   ship: false
 
 verify:
-  last_run: "2026-09-15T22:15:37Z"
+  last_run: "2026-09-15T22:25:04Z"
   last_status: "PASS"
 
 delivery:
@@ -87,4 +87,11 @@ iterations:
     action: "QA scope reconciled"
     outcome: "completed"
     memory_written: ["memory/qa-report.md", "memory/task_06.md", "memory/MEMORY.md"]
+    blockers: []
+  - n: 8
+    timestamp: "2026-09-15T22:25:04Z"
+    phase: "C"
+    action: "QA obligations resolved"
+    outcome: "completed"
+    memory_written: ["memory/qa-execution.md", "memory/task_07.md", "memory/MEMORY.md"]
     blockers: []

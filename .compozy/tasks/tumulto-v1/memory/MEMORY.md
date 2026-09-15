@@ -20,4 +20,4 @@ Executar toda a spec localmente via cy-loop-tasks: jogo solo, todos os itens, Pa
 Nenhuma pergunta ao usuário nesta execução. Nitro/TNT atordoam e cogumelos envenenam, sem eliminação, como escolha conservadora documentada.
 
 ## Ready for Next Run
-Preflight concluído. Iniciar task_01; manter estado via scripts e evidências por tarefa.
+Tasks 01–07 implementadas/verificadas; seguir revisão independente fase D. Entrega local é o escopo autorizado, sem remote/PR.

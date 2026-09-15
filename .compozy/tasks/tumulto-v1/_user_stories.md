@@ -1,6 +1,6 @@
 # Tumulto V1 — histórias de usuário
 
-Catálogo canônico dos critérios de aceitação. Regras e valores: [_spec.md](_spec.md). Estados visuais: [_uiux.md](_uiux.md). Todos os critérios abaixo descrevem comportamento esperado, ainda não implementado.
+Catálogo canônico dos critérios de aceitação. Regras e valores: [_spec.md](_spec.md). Estados visuais: [_uiux.md](_uiux.md). Critérios de aceitação da implementação; evidências nas tasks e no relatório de QA.
 
 ## Personas
 

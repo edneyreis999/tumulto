@@ -311,3 +311,23 @@ test("E2E-008: dashboard saves disk, retains failed drafts, detects conflicts; m
     await writeBalance(request, original);
   }
 });
+test("IT-002 countdown: pause/settings/resume completes countdown with reduced motion", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto("/");
+  await page.locator("#preferences").click();
+  await page.getByLabel("Reduzir movimento").check();
+  await page.keyboard.press("Escape");
+  await page.locator("#play").click();
+  await page.locator("#start").click();
+  await expect(page.locator("#arena")).toBeVisible();
+  await page.clock.runFor(300);
+  await page.keyboard.press("Escape");
+  await page.locator("#pause-preferences").click();
+  await page.keyboard.press("Escape");
+  await page.locator("#continue").click();
+  await page.clock.runFor(4000);
+  await expect(page.locator("#countdown")).toBeHidden();
+  await expect(page.locator("#timer")).not.toHaveText("1:30");
+});
