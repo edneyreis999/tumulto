@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "round": {
+    "durationMs": 90000,
+    "countdownMs": 3000
+  },
+  "simulation": {
+    "tickRate": 60,
+    "maxFrameGapMs": 250
+  },
+  "movement": {
+    "normalHopMs": 600,
+    "impulseHopMs": 333,
+    "playerRadius": 0.28
+  },
+  "spawns": {
+    "initialSeals": 3,
+    "maxSeals": 3,
+    "sealRespawnMs": 800,
+    "firstItemMs": 2000,
+    "itemIntervalMs": 2000,
+    "maxOtherItems": 6,
+    "itemLifetimeMs": 12000,
+    "minDistance": 1,
+    "distribution": "uniform",
+    "weights": {
+      "impulse": 6,
+      "spark": 6,
+      "flow": 6,
+      "flowDouble": 3,
+      "flowCross": 2,
+      "sparkCross": 3,
+      "beam": 3,
+      "lock": 3,
+      "tnt": 2,
+      "nitro": 1,
+      "mushroom": 2
+    }
+  },
+  "effects": {
+    "impulseMs": 8000,
+    "lockMs": 8000,
+    "impulseRefresh": "renew",
+    "lockRefresh": "renew"
+  },
+  "flow": {
+    "rotationMs": 1000
+  },
+  "weapons": {
+    "maxCharges": 1,
+    "chargesPerPickup": 1,
+    "projectileSpeed": 12,
+    "projectileRadius": 0.1,
+    "projectileLifetimeMs": 1000,
+    "stunMs": 1500,
+    "postProtectionMs": 500,
+    "beamRange": 8
+  },
+  "hazards": {
+    "tntFuseMs": 2000,
+    "blastRadius": 1,
+    "explosionStunMs": 2000,
+    "poisonMs": 5000,
+    "poisonSlowMultiplier": 1.5,
+    "postProtectionMs": 500
+  },
+  "rules": {
+    "sameCellPriority": "rotating"
+  },
+  "bots": {
+    "standard": {
+      "decisionMs": 300,
+      "planningHops": 1,
+      "mistakeChance": 0.1,
+      "depositThreshold": 4,
+      "endgameMs": 10000,
+      "fireRange": 6,
+      "targetHoldMs": 600,
+      "weights": {
+        "seal": 4,
+        "impulse": 8,
+        "weapon": 5,
+        "flow": 7,
+        "lock": 4,
+        "rival": 3,
+        "neutral": 2,
+        "danger": 6,
+        "contest": 2
+      }
+    },
+    "hard": {
+      "decisionMs": 150,
+      "planningHops": 3,
+      "mistakeChance": 0.02,
+      "depositThreshold": 3,
+      "endgameMs": 10000,
+      "fireRange": 8,
+      "targetHoldMs": 300,
+      "weights": {
+        "seal": 5,
+        "impulse": 8,
+        "weapon": 5,
+        "flow": 7,
+        "lock": 4,
+        "rival": 3,
+        "neutral": 2,
+        "danger": 12,
+        "contest": 6
+      }
+    }
+  }
+}

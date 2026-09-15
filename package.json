@@ -1,0 +1,21 @@
+{
+  "name": "tumulto",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "game-design": "node tools/game-design-server.js",
+    "test:game-design": "node --test tests/game-design.test.js",
+    "dev": "node tools/game-design-server.js",
+    "test:unit": "node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "build": "node tools/build.js",
+    "preview": "node tools/preview.js",
+    "check": "node tools/check.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

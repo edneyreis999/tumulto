@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.agents/
+.codex/
+.deep-review/
+playwright-report/
+test-results/
+*.tmp
+.compozy/tasks/*/evidence/**/*.png
+.compozy/tasks/*/evidence/**/*.webm
+.impeccable/

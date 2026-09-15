@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game design · Tumulto</title>
+  <link rel="stylesheet" href="/tools/game-design.css">
+</head>
+<body>
+  <a class="skip" href="#main">Ir para os parâmetros</a>
+  <header class="topbar"><a class="brand" href="/game-design.html">TUMULTO<span>OFICINA DO JOGO</span></a><span class="local">Editor local</span></header>
+  <div class="layout">
+    <aside><p class="eyebrow">BALANCEAMENTO</p><nav aria-label="Seções de game design" id="navigation"></nav><div class="fixed-rules"><strong>Base do protótipo</strong><p>8 × 8 casas<br>1 humano + 3 bots<br>Padrão e Difícil</p></div></aside>
+    <main id="main">
+      <div class="intro"><p class="eyebrow">TUMULTO / GAME DESIGN</p><h1>Ajuste a disputa.</h1><p>Encontre o ritmo dos saltos, a frequência dos itens e o desafio dos bots.</p></div>
+      <div class="notice">Valores iniciais para playtest. Salvar grava <strong>game-design.json</strong>; a integração com as partidas está prevista na spec e ainda não foi implementada.</div>
+      <div id="error" role="alert" hidden></div>
+      <form id="editor" novalidate><div id="sections"></div></form>
+      <noscript>Ative JavaScript e abra esta página pelo servidor iniciado com npm run game-design.</noscript>
+    </main>
+  </div>
+  <footer class="savebar"><div><strong id="status" role="status">Carregando configuração…</strong><small id="detail">Lendo game-design.json</small></div><div class="actions"><button id="export" type="button" disabled>Exportar rascunho</button><button id="reload" type="button">Recarregar arquivo</button><button id="save" class="primary" type="submit" form="editor" disabled>Salvar</button></div></footer>
+  <script type="module" src="/tools/game-design.js"></script>
+</body>
+</html>
