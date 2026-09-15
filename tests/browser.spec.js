@@ -356,7 +356,9 @@ test("E2E-005 entry: initial focus, explicit roles and sprite fallback remain us
 });
 test("IT-006 unexpected runtime error shows stable code and recovery", async ({
   page,
+  context,
 }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.addInitScript(() => {
     CanvasRenderingContext2D.prototype.clearRect = () => {
       throw new Error("controlled-render-failure");
@@ -371,6 +373,12 @@ test("IT-006 unexpected runtime error shows stable code and recovery", async ({
     "Recarregue ou volte ao menu",
   );
   await expect(page.locator("#fatal-reload")).toBeEnabled();
+  await page.locator("#fatal-copy").click();
+  await expect(page.locator("#fatal-copy-status")).toHaveText(
+    "Diagnóstico copiado.",
+  );
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(JSON.parse(copied).errorCode).toBe("UNEXPECTED_GAME_ERROR");
   await page.screenshot({
     path: ".compozy/tasks/tumulto-v1/evidence/review/runtime-error.png",
   });

@@ -38,7 +38,7 @@ async function local(t) {
     });
   return { configPath, url, read, save };
 }
-test("UT-026: all 79 tuning fields validate ranges, required values and cross-field invariants", () => {
+test("UT-026: all tuning fields validate ranges, required values and cross-field invariants", () => {
   const leafPaths = (value, prefix = "") =>
     Object.entries(value).flatMap(([key, item]) => {
       const field = prefix ? `${prefix}.${key}` : key;
@@ -125,6 +125,9 @@ test("IT-010: current match freezes config; next load sees disk edits; invalid d
     difficulty: "hard",
   });
   first.config.round.durationMs = 20000;
+  first.config.bots.hard.weights.danger += 1;
+  Reflect.set(match.config.round, "durationMs", 10000);
+  Reflect.set(match.config.bots.hard.weights, "danger", 99);
   assert.equal(match.config.round.durationMs, 90000);
   assert.deepEqual(
     match.config.bots.hard.weights,
