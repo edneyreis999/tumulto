@@ -34,9 +34,11 @@ export function decideBot(view, playerId, memory, profile) {
         : 0;
     if (item.kind === "impulse" && !active(view, player.impulseUntilTick))
       benefit = profile.weights.impulse;
-    if (item.kind === "spark" && !player.weapon)
+    if (["spark", "sparkCross", "beam"].includes(item.kind) && !player.weapon)
       benefit = profile.weights.weapon;
     if (item.kind.startsWith("flow")) benefit = profile.weights.flow;
+    if (item.kind === "lock" && !active(view, player.lockUntilTick))
+      benefit = profile.weights.lock * pendings;
     if (benefit > 0)
       choices.push({
         cell: item.cell,
@@ -46,7 +48,11 @@ export function decideBot(view, playerId, memory, profile) {
   for (let index = 0; index < 64; index++) {
     const owner = view.owners[index],
       cell = { row: Math.floor(index / 8), col: index % 8 };
-    if (owner !== playerId && distance(origin, cell))
+    if (
+      owner !== playerId &&
+      distance(origin, cell) &&
+      !(owner !== null && active(view, view.players[owner].lockUntilTick))
+    )
       choices.push({
         cell,
         value:
@@ -102,7 +108,11 @@ export function decideBot(view, playerId, memory, profile) {
       const row = other.cell.row - player.cell.row,
         col = other.cell.col - player.cell.col;
       return (
-        (dr ? col === 0 && row * dr > 0 : row === 0 && col * dc > 0) &&
+        (player.weapon.kind === "sparkCross"
+          ? col === 0 || row === 0
+          : dr
+            ? col === 0 && row * dr > 0
+            : row === 0 && col * dc > 0) &&
         Math.abs(row) + Math.abs(col) <= profile.fireRange
       );
     }),

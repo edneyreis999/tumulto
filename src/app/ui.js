@@ -248,6 +248,7 @@ export function createApp(
         ["protectedUntilTick", "Protegido"],
         ["lockUntilTick", "Cadeado"],
         ["poisonUntilTick", "Veneno"],
+        ["hazardProtectedUntilTick", "Proteção explosiva"],
       ])
         if (active(match, p[field]))
           effects.push(
@@ -389,6 +390,12 @@ export function createApp(
                 until: match.tick + ticks(match, 700),
               });
             }
+            if (p.type === "hazard-exploded")
+              feedback.push({
+                type: "explosion",
+                cells: p.cells,
+                until: match.tick + ticks(match, 350),
+              });
             if (p.type === "beam-fired")
               feedback.push({
                 type: "beam",

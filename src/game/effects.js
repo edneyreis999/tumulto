@@ -12,7 +12,19 @@ import {
   spawnItem,
   priority,
 } from "./engine.js";
-export const enabledItems = ["impulse", "spark", "flow"];
+export const enabledItems = [
+  "impulse",
+  "spark",
+  "flow",
+  "flowDouble",
+  "flowCross",
+  "sparkCross",
+  "beam",
+  "lock",
+  "tnt",
+  "nitro",
+  "mushroom",
+];
 export function cellPriority(state, index, ids) {
   if (!state.cellPriorities.has(index))
     state.cellPriorities.set(index, priority(state, [0, 1, 2, 3]));
@@ -20,6 +32,15 @@ export function cellPriority(state, index, ids) {
 }
 export function prepareEffects(state) {
   state.cellPriorities = new Map();
+  state.pendingBeams = [];
+  for (const item of [...state.items].sort((a, b) => a.id - b.id))
+    if (
+      item.kind === "tnt" &&
+      item.armedAtTick !== null &&
+      state.tick >=
+        item.armedAtTick + ticks(state, state.config.hazards.tntFuseMs)
+    )
+      explode(state, item);
   state.projectiles = state.projectiles.filter(
     (p) => state.tick < p.expiresAtTick,
   );
@@ -38,7 +59,13 @@ export function hopDuration(state, player) {
   const ms = active(state, player.impulseUntilTick)
     ? state.config.movement.impulseHopMs
     : state.config.movement.normalHopMs;
-  return ticks(state, ms);
+  return ticks(
+    state,
+    ms *
+      (active(state, player.poisonUntilTick)
+        ? state.config.hazards.poisonSlowMultiplier
+        : 1),
+  );
 }
 export function hitByWeapon(state, attackerId, victim) {
   if (active(state, victim.protectedUntilTick)) return false;
@@ -64,15 +91,30 @@ export function fireWeapon(state, player, input) {
     return;
   const kind = player.weapon.kind;
   if (--player.weapon.charges <= 0) player.weapon = null;
-  state.projectiles.push({
-    id: state.nextEntityId++,
-    ownerId: player.id,
-    ...playerPosition(player, state.tick),
-    direction: player.facing,
-    spawnTick: state.tick,
-    expiresAtTick:
-      state.tick + ticks(state, state.config.weapons.projectileLifetimeMs),
-  });
+  const from = playerPosition(player, state.tick);
+  if (kind === "beam") {
+    const [dr, dc] = DELTAS[player.facing],
+      range = state.config.weapons.beamRange;
+    const to = {
+      x: Math.max(0, Math.min(8, from.x + dc * range)),
+      y: Math.max(0, Math.min(8, from.y + dr * range)),
+    };
+    state.pendingBeams.push({ attackerId: player.id, from, to });
+    emit(state, "beam-fired", { playerId: player.id, from, to });
+  } else
+    for (const direction of kind === "sparkCross"
+      ? DIRECTIONS
+      : [player.facing]) {
+      state.projectiles.push({
+        id: state.nextEntityId++,
+        ownerId: player.id,
+        ...from,
+        direction,
+        spawnTick: state.tick,
+        expiresAtTick:
+          state.tick + ticks(state, state.config.weapons.projectileLifetimeMs),
+      });
+    }
   emit(state, "weapon-fired", { playerId: player.id, kind });
 }
 // Relative swept-circle collision handles both fast shots and moving targets.
@@ -92,6 +134,24 @@ export function contactTime(from, to, targetFrom, targetTo, radius) {
   return t >= 0 && t <= 1 ? t : null;
 }
 export function advanceProjectiles(state) {
+  for (const beam of state.pendingBeams)
+    for (const victim of state.players)
+      if (victim.id !== beam.attackerId) {
+        const center = playerPosition(victim, state.tick);
+        if (
+          contactTime(
+            beam.from,
+            beam.to,
+            center,
+            center,
+            state.config.movement.playerRadius +
+              state.config.weapons.projectileRadius,
+          ) !== null
+        )
+          hitByWeapon(state, beam.attackerId, victim);
+      }
+  state.pendingBeams = [];
+
   const contacts = [],
     ends = new Map(),
     speed =
@@ -142,16 +202,81 @@ export function advanceProjectiles(state) {
   });
 }
 export function flowCells(item) {
-  const cells = [item.cell],
-    [dr, dc] = DELTAS[item.direction];
-  let row = item.cell.row + dr,
-    col = item.cell.col + dc;
-  while (row >= 0 && row < 8 && col >= 0 && col < 8) {
-    cells.push({ row, col });
-    row += dr;
-    col += dc;
+  const cells = new Map([[cellIndex(item.cell), item.cell]]);
+  if (item.kind === "flowDouble" || item.kind === "flowCross") {
+    for (let i = 0; i < 8; i++) {
+      if (
+        item.kind === "flowCross" ||
+        ["east", "west"].includes(item.direction)
+      ) {
+        const cell = { row: item.cell.row, col: i };
+        cells.set(cellIndex(cell), cell);
+      }
+      if (
+        item.kind === "flowCross" ||
+        ["north", "south"].includes(item.direction)
+      ) {
+        const cell = { row: i, col: item.cell.col };
+        cells.set(cellIndex(cell), cell);
+      }
+    }
+  } else {
+    const [dr, dc] = DELTAS[item.direction];
+    let row = item.cell.row + dr,
+      col = item.cell.col + dc;
+    while (row >= 0 && row < 8 && col >= 0 && col < 8) {
+      const cell = { row, col };
+      cells.set(cellIndex(cell), cell);
+      row += dr;
+      col += dc;
+    }
   }
+  return [...cells.values()];
+}
+export function explosionCells(state, item) {
+  const radius = state.config.hazards.blastRadius,
+    cells = [];
+  for (
+    let row = Math.max(0, item.cell.row - radius);
+    row <= Math.min(7, item.cell.row + radius);
+    row++
+  )
+    for (
+      let col = Math.max(0, item.cell.col - radius);
+      col <= Math.min(7, item.cell.col + radius);
+      col++
+    )
+      cells.push({ row, col });
   return cells;
+}
+export function explode(state, item) {
+  state.items = state.items.filter((other) => other.id !== item.id);
+  const cells = explosionCells(state, item),
+    indices = new Set(cells.map(cellIndex));
+  for (const player of state.players) {
+    const pos = playerPosition(player, state.tick),
+      cell = { row: Math.floor(pos.y), col: Math.floor(pos.x) };
+    if (
+      !indices.has(cellIndex(cell)) ||
+      active(state, player.hazardProtectedUntilTick)
+    )
+      continue;
+    player.weapon = null;
+    player.impulseUntilTick = 0;
+    player.stunnedUntilTick = Math.max(
+      player.stunnedUntilTick,
+      state.tick + ticks(state, state.config.hazards.explosionStunMs),
+    );
+    player.hazardProtectedUntilTick =
+      player.stunnedUntilTick +
+      ticks(state, state.config.hazards.postProtectionMs);
+    emit(state, "hit", {
+      attackerId: null,
+      victimId: player.id,
+      cause: "explosion",
+    });
+  }
+  emit(state, "hazard-exploded", { kind: item.kind, cell: item.cell, cells });
 }
 export function applyPickups(state, collectors) {
   const flows = [];
@@ -167,7 +292,7 @@ export function applyPickups(state, collectors) {
         effect: "impulse",
         untilTick: player.impulseUntilTick,
       });
-    } else if (item.kind === "spark") {
+    } else if (["spark", "sparkCross", "beam"].includes(item.kind)) {
       player.weapon = {
         kind: item.kind,
         charges: Math.min(
@@ -176,7 +301,32 @@ export function applyPickups(state, collectors) {
             state.config.weapons.chargesPerPickup,
         ),
       };
-    } else if (item.kind === "flow") flows.push({ player, item });
+    } else if (item.kind.startsWith("flow")) flows.push({ player, item });
+    else if (item.kind === "lock") {
+      player.lockUntilTick =
+        (state.config.effects.lockRefresh === "extend"
+          ? Math.max(state.tick, player.lockUntilTick)
+          : state.tick) + ticks(state, state.config.effects.lockMs);
+      emit(state, "effect-changed", {
+        playerId: player.id,
+        effect: "lock",
+        untilTick: player.lockUntilTick,
+      });
+    } else if (item.kind === "mushroom") {
+      player.poisonUntilTick =
+        state.tick + ticks(state, state.config.hazards.poisonMs);
+      emit(state, "effect-changed", {
+        playerId: player.id,
+        effect: "poison",
+        untilTick: player.poisonUntilTick,
+      });
+    } else if (item.kind === "tnt") {
+      if (item.armedAtTick === null) {
+        item.armedAtTick = state.tick;
+        emit(state, "hazard-armed", { itemId: item.id, cell: item.cell });
+      }
+      continue;
+    } else if (item.kind === "nitro") explode(state, item);
     consume(state, item, player);
   }
   const intentions = new Map();

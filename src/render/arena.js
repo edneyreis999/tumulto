@@ -271,6 +271,16 @@ export function renderArena(
     }
   }
   for (const f of feedback) {
+    if (f.type === "explosion") {
+      ctx.fillStyle = "rgba(191,94,36,.38)";
+      for (const cell of f.cells)
+        ctx.fillRect(
+          margin + cell.col * tile,
+          margin + cell.row * tile,
+          tile,
+          tile,
+        );
+    }
     if (f.type === "beam") {
       ctx.strokeStyle = "#fffbea";
       ctx.lineWidth = 5;

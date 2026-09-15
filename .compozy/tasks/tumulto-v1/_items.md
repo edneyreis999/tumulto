@@ -29,13 +29,13 @@ Inventário único `{kind, charges}`. Coleta de mesmo tipo soma `chargesPerPicku
 
 Centelha simples: projétil cardinal, primeiro rival interceptado. Cruz: quatro projéteis independentes emitidos do mesmo centro, uma carga total. Altura visual não dá imunidade. Protegidos não bloqueiam projéteis; atacante é ignorado; projéteis não colidem entre si. Raio: semirreta instantânea de largura lógica igual ao diâmetro do projétil e comprimento `beamRange`, testa interseção com círculo do personagem no instante do tiro; afeta todos os elegíveis, não apenas primeiro. Efeito visual é breve, sem repetir impactos.
 
-Acerto válido remove arma/impulso, aplica `weapons.stunMs` e proteção de armas por stun + `postProtectionMs`. Armas não removem cadeado/veneno, não roubam pintura, não alteram pontos. Salto em curso termina com duração já fixada. Itens coletados depois do impacto funcionam sem cancelar stun. Vários projéteis no mesmo passo são processados por instante de contato e id; o primeiro impacto protege contra os posteriores. Raio é resolvido no disparo antes do avanço dos projéteis. Em caso de empate de distância/tempo dentro de um projétil, aplica-se arbitragem configurada.
+Acerto válido remove arma/impulso, aplica `weapons.stunMs` e proteção de armas por stun + `postProtectionMs`. Armas não removem cadeado/veneno, não roubam pintura, não alteram pontos. Salto em curso termina com duração já fixada. Itens coletados depois do impacto funcionam sem cancelar stun. Vários projéteis no mesmo passo são processados por instante de contato e id; o primeiro impacto protege contra os posteriores. Intenções de disparo são coletadas para todos os participantes elegíveis antes dos impactos; raios são resolvidos antes dos projéteis, evitando cancelar o tiro simultâneo de um slot posterior. Em caso de empate de distância/tempo dentro de um projétil, aplica-se arbitragem configurada.
 
 ## Cadeado
 
 `effects.lockMs` protege todas as casas próprias, inclusive novas marcas durante o efeito. Rivais continuam atravessando/coletando, mas aterrissagens e fluxos não tomam essas casas. Conversão pelo dono funciona e neutraliza suas casas; não termina o cadeado. Recoleta segue `lockRefresh` (renew/extend). Acertos, veneno e explosões não removem cadeado e não são evitados por ele. Expiração libera tomada a partir daquele passo.
 
-Coletas de cadeado do passo são aplicadas depois de todas as marcas básicas e antes dos fluxos. Não rever retroativamente uma tomada por aterrissagem já resolvida. Duas proteções não disputam a mesma casa porque cada casa tem um único dono.
+Coletas/ativações seguem ordem row-major da casa, com coletor único. Coletas de cadeado do passo são aplicadas depois de todas as marcas básicas e antes dos fluxos. Não rever retroativamente uma tomada por aterrissagem já resolvida. Duas proteções não disputam a mesma casa porque cada casa tem um único dono.
 
 ## Perigos
 

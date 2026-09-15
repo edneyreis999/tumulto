@@ -22,10 +22,32 @@ const add = (kind, row, col, more = {}) =>
     armedAtTick: null,
     ...more,
   });
-add("impulse", 3, 1);
-add("flow", 3, 2);
-add("spark", 3, 3);
-add("seal", 3, 4);
+const scene = new URLSearchParams(location.search).get("scene");
+if (scene === "cross" || scene === "beam") {
+  add(scene === "cross" ? "sparkCross" : "beam", 3, 1);
+  state.players[1].cell = {
+    row: scene === "cross" ? 2 : 3,
+    col: scene === "cross" ? 1 : 3,
+  };
+  state.players[2].cell = {
+    row: scene === "cross" ? 4 : 3,
+    col: scene === "cross" ? 1 : 5,
+  };
+  state.players[3].cell = { row: 2, col: 5 };
+} else if (scene === "expanded") {
+  add("lock", 3, 1);
+  add("flowDouble", 3, 2);
+  add("flowCross", 3, 3);
+  add("mushroom", 3, 4);
+  add("tnt", 3, 5);
+  add("nitro", 3, 6);
+  state.players[1].cell = { row: 7, col: 7 };
+} else {
+  add("impulse", 3, 1);
+  add("flow", 3, 2);
+  add("spark", 3, 3);
+  add("seal", 3, 4);
+}
 window.fixtureApp = createApp(document.querySelector("#app"), {
   configLoader: async () => ({ config, revision }),
   initialState: state,

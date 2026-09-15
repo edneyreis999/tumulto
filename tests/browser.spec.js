@@ -167,3 +167,40 @@ test("IT-006: Canvas failure stops game; denied clipboard exposes diagnostic tex
     ].sort(),
   );
 });
+test("E2E-006: extended pickups, cross/beam and hazards use real controls", async ({
+  page,
+}) => {
+  await page.clock.install();
+  for (const scene of ["cross", "beam"]) {
+    await page.goto(`/tests/harness.html?scene=${scene}`);
+    await expect(page.locator("#arena")).toBeVisible();
+    await page.keyboard.down("ArrowRight");
+    await page.clock.runFor(80);
+    await page.keyboard.up("ArrowRight");
+    await page.clock.runFor(700);
+    await expect(page.locator("#effect-0")).toContainText(
+      scene === "cross" ? "Centelha em cruz" : "Raio elétrico",
+    );
+    await page.keyboard.press("Space");
+    await page.clock.runFor(400);
+    await expect(page.locator("#effect-1")).toContainText("Protegido");
+    await expect(page.locator("#effect-2")).toContainText("Protegido");
+  }
+  await page.goto("/tests/harness.html?scene=expanded");
+  await expect(page.locator("#arena")).toBeVisible();
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.down("ArrowRight");
+    await page.clock.runFor(80);
+    await page.keyboard.up("ArrowRight");
+    await page.clock.runFor(1000);
+    if (i === 0)
+      await expect(page.locator("#effect-0")).toContainText("Cadeado");
+    if (i === 3)
+      await expect(page.locator("#effect-0")).toContainText("Veneno");
+  }
+  await page.clock.runFor(2100);
+  await expect(page.locator("#effect-0")).toContainText("Atordoado");
+  await page.screenshot({
+    path: ".compozy/tasks/tumulto-v1/evidence/task_04/expanded.png",
+  });
+});

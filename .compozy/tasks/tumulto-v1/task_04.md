@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Adicionar fluxos ampliados, armas, cadeado e perigos"
 type: feature
 complexity: high
@@ -14,9 +14,9 @@ Todos os itens solicitados aparecem, são legíveis e alteram a rodada conforme 
 Implementar fluxos duplo/cruz, Centelha em cruz, Raio, Cadeado, TNT/Nitro/cogumelos; integrar geração, colisões, efeitos, arbitragem, HUD, instruções e bots. Valores do JSON. Sem eliminação, fechamento de áreas ou NPC de perigo. Não deixar item apenas desenhado sem ação real.
 
 ## Subtarefas
-- [ ] Implementar/produzir o resultado pelo fluxo real previsto.
-- [ ] Executar as verificações próprias e corrigir falhas.
-- [ ] Registrar evidência e pendências de integração na memória antes de concluir.
+- [x] Implementar/produzir o resultado pelo fluxo real previsto.
+- [x] Executar as verificações próprias e corrigir falhas.
+- [x] Registrar evidência e pendências de integração na memória antes de concluir.
 
 ## Contratos
 [_spec.md](_spec.md), [_items.md](_items.md), [_game-design.md](_game-design.md), [_user_stories.md](_user_stories.md), [_uiux.md](_uiux.md), [_dx.md](_dx.md), [_tests.md](_tests.md). ADRs 003/004/005 prevalecem sobre a ADR-001 histórica.

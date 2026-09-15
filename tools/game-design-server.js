@@ -40,17 +40,18 @@ export function createDesignServer({
           error: "HOST_REJECTED",
           message: "Use o endereço local exibido no terminal.",
         });
-      if (req.method === "GET" && req.url === "/game-design.json") {
+      const pathname = new URL(req.url, `http://${expectedHost}`).pathname;
+      if (req.method === "GET" && pathname === "/game-design.json") {
         const bytes = await readFile(configPath);
         return send(200, bytes.toString(), { ETag: revision(bytes) });
       }
       if (
         req.method === "GET" &&
-        (/^\/(src|assets)\/[a-zA-Z0-9_./-]+$/.test(req.url) ||
+        (/^\/(src|assets)\/[a-zA-Z0-9_./-]+$/.test(pathname) ||
           (process.env.TUMULTO_TEST_MODE === "1" &&
-            /^\/tests\/[a-zA-Z0-9_./-]+$/.test(req.url)))
+            /^\/tests\/[a-zA-Z0-9_./-]+$/.test(pathname)))
       ) {
-        const relative = req.url.slice(1);
+        const relative = pathname.slice(1);
         if (relative.split("/").includes(".."))
           return send(404, { error: "NOT_FOUND" });
         const extension = path.extname(relative);
@@ -75,15 +76,15 @@ export function createDesignServer({
           throw error;
         }
       }
-      if (req.method === "GET" && assets.has(req.url)) {
-        const [file, type] = assets.get(req.url);
+      if (req.method === "GET" && assets.has(pathname)) {
+        const [file, type] = assets.get(pathname);
         return send(
           200,
           (await readFile(path.join(projectRoot, file))).toString(),
           { "Content-Type": `${type}; charset=utf-8` },
         );
       }
-      if (req.url !== "/api/game-design" || req.method !== "PUT")
+      if (pathname !== "/api/game-design" || req.method !== "PUT")
         return send(404, { error: "NOT_FOUND" });
       if (
         req.headers.origin !== `http://${expectedHost}` ||
