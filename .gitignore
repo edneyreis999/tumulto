@@ -9,3 +9,7 @@ test-results/
 .compozy/tasks/*/evidence/**/*.png
 .compozy/tasks/*/evidence/**/*.webm
 .impeccable/
+
+# QA generated evidence
+docs/qa/state.csv
+docs/qa/evidence/
