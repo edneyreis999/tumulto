@@ -4,7 +4,14 @@ import path from "node:path";
 const port = Number(process.env.TUMULTO_PREVIEW_PORT || 4175);
 createServer(async (req, res) => {
   const url = new URL(req.url, "http://127.0.0.1");
-  const pathname = decodeURIComponent(url.pathname);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(url.pathname);
+  } catch {
+    res.writeHead(400);
+    res.end("Endereço inválido.");
+    return;
+  }
   const relative = pathname.replace(/^\/+/, "") || "index.html";
   const file = path.resolve("dist", relative);
   if (

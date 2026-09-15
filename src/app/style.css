@@ -389,7 +389,7 @@ kbd {
 .play-layout {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 40px;
 }
 .board-wrap {
@@ -407,6 +407,8 @@ kbd {
   image-rendering: pixelated;
 }
 .match-guide {
+  max-height: max(285px, calc(100vh - 305px));
+  overflow-y: auto;
   width: 225px;
   flex-shrink: 0;
   padding-left: 28px;

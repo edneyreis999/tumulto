@@ -108,6 +108,10 @@ test("E2E-004: viewport gate pauses and prevents continuing until resized", asyn
   await expect(page.locator("#continue")).toBeDisabled();
   await page.setViewportSize({ width: 1280, height: 720 });
   await expect(page.locator("#continue")).toBeEnabled();
+  await page.setViewportSize({ width: 960, height: 600 });
+  await page.locator("#continue").click();
+  const board = await page.locator("#board").boundingBox();
+  expect(board.y + board.height).toBeLessThanOrEqual(600);
 });
 test("E2E-005: keyboard settings, return focus and reset on new visit", async ({
   page,
