@@ -101,7 +101,7 @@ Não transformar “divertido” em um teste unitário nem exigir vitória de um
 
 ## Execução e resultados
 
-Execução automatizada: 35 testes Node e 10 jornadas Playwright aprovados; IDs agrupados por invariante, sem correspondência artificial de um ID por função. QA real em task_07. Cada tarefa registra comando, resultado e evidência ao implementar. Impacto/compatibilidade: [_spec.md — Impact Analysis](_spec.md#impact-analysis--autoridade-única).
+Execução automatizada: 35 testes Node e 12 jornadas Playwright aprovados; IDs agrupados por invariante, sem correspondência artificial de um ID por função. QA real em task_07. Cada tarefa registra comando, resultado e evidência ao implementar. Impacto/compatibilidade: [_spec.md — Impact Analysis](_spec.md#impact-analysis--autoridade-única).
 
 ## Ampliação de itens, bots e editor
 

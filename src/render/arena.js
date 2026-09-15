@@ -2,34 +2,8 @@ import { character } from "../content/characters.js";
 import { playerPosition, active } from "../game/engine.js";
 const sprites = new Image();
 sprites.src = new URL("../../assets/characters.png", import.meta.url).href;
-export const itemSymbols = {
-  seal: "◎",
-  impulse: "↑",
-  spark: "✧",
-  flow: "➜",
-  flowDouble: "↔",
-  flowCross: "✣",
-  sparkCross: "✥",
-  beam: "ϟ",
-  lock: "▣",
-  tnt: "T",
-  nitro: "N",
-  mushroom: "☂",
-};
-export const itemLabels = {
-  seal: "Selo",
-  impulse: "Impulso",
-  spark: "Centelha",
-  flow: "Fluxo",
-  flowDouble: "Fluxo duplo",
-  flowCross: "Fluxo em cruz",
-  sparkCross: "Centelha em cruz",
-  beam: "Raio elétrico",
-  lock: "Cadeado",
-  tnt: "TNT",
-  nitro: "Nitro",
-  mushroom: "Veneno",
-};
+import { itemSymbols, itemLabels } from "../content/items.js";
+export { itemSymbols, itemLabels };
 const dirAngle = {
   east: 0,
   south: Math.PI / 2,
@@ -68,6 +42,16 @@ export function drawAvatar(
     ctx.beginPath();
     ctx.arc(x, y, size * 0.27, 0, Math.PI * 2);
     ctx.fill();
+    ctx.save();
+    ctx.fillStyle = "#fffbea";
+    ctx.font = `bold ${size * 0.34}px system-ui`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.strokeStyle = "#243226";
+    ctx.lineWidth = Math.max(1, size * 0.03);
+    ctx.strokeText(info.symbol, x, y);
+    ctx.fillText(info.symbol, x, y);
+    ctx.restore();
   }
 }
 export function renderArena(

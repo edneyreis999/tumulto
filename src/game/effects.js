@@ -12,19 +12,8 @@ import {
   spawnItem,
   priority,
 } from "./engine.js";
-export const enabledItems = [
-  "impulse",
-  "spark",
-  "flow",
-  "flowDouble",
-  "flowCross",
-  "sparkCross",
-  "beam",
-  "lock",
-  "tnt",
-  "nitro",
-  "mushroom",
-];
+import { enabledItems } from "../content/items.js";
+export { enabledItems };
 export function cellPriority(state, index, ids) {
   if (!state.cellPriorities.has(index))
     state.cellPriorities.set(index, priority(state, [0, 1, 2, 3]));

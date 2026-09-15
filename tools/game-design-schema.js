@@ -15,19 +15,8 @@ const choice = (path, label, options) => ({
   type: "select",
   options,
 });
-export const itemNames = {
-  impulse: "Impulso",
-  spark: "Centelha",
-  flow: "Fluxo simples",
-  flowDouble: "Fluxo duplo",
-  flowCross: "Fluxo em cruz",
-  sparkCross: "Centelha em cruz",
-  beam: "Raio elétrico",
-  lock: "Cadeado",
-  tnt: "TNT",
-  nitro: "Nitro",
-  mushroom: "Cogumelo venenoso",
-};
+import { itemNames } from "../src/content/items.js";
+export { itemNames };
 export const groups = [
   {
     id: "round",

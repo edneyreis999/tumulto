@@ -21,6 +21,6 @@ journey:
   actions: [Menu → preferências → partida → pausa → preferências → continuar]
   goal: {observable: "Pausa preserva tempo e controles voltam com foco visível"}
   true_end_state: Pausa preserva tempo e controles voltam com foco visível
-  abandonment: [Fechar ou voltar sem confirmação; nova visita respeita persistência documentada]
+  abandonment: [Fechar ou voltar sem confirmação; nova visita reinicia partida e preferências; apenas game-design.json salvo permanece no disco]
   crosses: [UI, motor, JSON local]
 ```

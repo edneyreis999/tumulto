@@ -27,7 +27,7 @@ test("UT-027: profiles use public state, independent reproducible randomness and
       profile,
     );
     assert.equal(waiting.input.firePressed, false);
-    assert.equal(waiting.memory, first.memory);
+    assert.deepEqual(waiting.memory, first.memory);
     assert.equal(
       hopDuration(state, state.players[1]),
       hopDuration(state, state.players[0]),

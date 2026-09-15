@@ -39,7 +39,19 @@ async function local(t) {
   return { configPath, url, read, save };
 }
 test("UT-026: all 79 tuning fields validate ranges, required values and cross-field invariants", () => {
-  assert.equal(fields.length, 79);
+  const leafPaths = (value, prefix = "") =>
+    Object.entries(value).flatMap(([key, item]) => {
+      const field = prefix ? `${prefix}.${key}` : key;
+      return item && typeof item === "object"
+        ? leafPaths(item, field)
+        : [field];
+    });
+  assert.deepEqual(
+    fields.map((field) => field.path).sort(),
+    leafPaths(configuration())
+      .filter((field) => field !== "schemaVersion")
+      .sort(),
+  );
   assert.deepEqual(validateConfig(configuration()), []);
   for (const field of fields) {
     const config = configuration();
@@ -114,7 +126,10 @@ test("IT-010: current match freezes config; next load sees disk edits; invalid d
   });
   first.config.round.durationMs = 20000;
   assert.equal(match.config.round.durationMs, 90000);
-  assert.ok(Object.isFrozen(match.config.bots.hard.weights));
+  assert.deepEqual(
+    match.config.bots.hard.weights,
+    configuration().bots.hard.weights,
+  );
   assert.equal((await io.save(first.config, first.revision)).status, 200);
   const next = await loadConfig(`${io.url}/game-design.json`);
   assert.equal(next.config.round.durationMs, 20000);

@@ -1,6 +1,6 @@
 # Tumulto — especificação da primeira versão
 
-**Estado:** contrato atualizado por decisões do autor; jogo não implementado. O editor local está em desenvolvimento e será verificado/integrado na task_05.  
+**Estado:** implementação e QA concluídos; editor integrado e verificado. Revisão final registrada em memory/peer-review.md.
 **Data:** 2026-09-15. **Slug:** `tumulto-v1`. **Idioma do produto:** português brasileiro.
 
 ## Decisões e autoridade
@@ -225,7 +225,7 @@ Cadeado protege a propriedade, TNT explode após ativação, Nitro explode no co
 
 ### BR-17 — Game design e configuração por rodada
 
-O autor abre `game-design.html`, altera parâmetros e salva `game-design.json` no disco. JSON inválido e gravação concorrente não sobrescrevem o arquivo silenciosamente. Cada nova rodada/revanche carrega uma configuração validada e imutável até seu fim. Alteração durante a partida vale apenas na próxima. O painel mostra que a integração com o jogo ainda está pendente. Contrato: [_game-design.md](_game-design.md).
+O autor abre `game-design.html`, altera parâmetros e salva `game-design.json` no disco. JSON inválido e gravação concorrente não sobrescrevem o arquivo silenciosamente. Cada nova rodada/revanche carrega uma configuração validada e imutável até seu fim. Alteração durante a partida vale apenas na próxima. O painel informa que o arquivo salvo vale para as próximas partidas. Contrato: [_game-design.md](_game-design.md).
 
 ## User Experience
 
@@ -262,13 +262,13 @@ Esta seleção é proposta para a primeira entrega e pode ser alterada na revis�
 - OQ-02, editorial: validar a brincadeira no pátio e os nomes de itens como criações do spin-off. Nada disso passa a integrar automaticamente o cânone do livro.
 - OQ-03, acompanhamento: definir repositório GitHub e destino Linear caso o autor queira a publicação/espelhamento. Não há repositório Git neste diretório nem issue de origem informada.
 
-Não há regra de partida deixada como “igual ao Crash” ou “a descobrir”. OQs são escolhas de escopo, editorial e acompanhamento; esta proposta não está marcada como aprovada.
+Não há regra de partida deixada como “igual ao Crash” ou “a descobrir”. OQs são escolhas de escopo, editorial e acompanhamento; a implementação integral foi autorizada pelo autor nesta sessão.
 
 # Part II — Technical
 
 ## Executive Summary
 
-Aplicação JavaScript, com ferramenta de build simples a definir na task_01, Canvas 2D para arena e DOM semântico para menus, HUD e diálogos. Sem framework de componentes na primeira versão: o projeto começa vazio e não possui componentes ou design system a reutilizar.
+Aplicação JavaScript, com ferramenta de build estático em tools/build.js, Canvas 2D para arena e DOM semântico para menus, HUD e diálogos. Sem framework de componentes na primeira versão: o projeto começa vazio e não possui componentes ou design system a reutilizar.
 
 O motor evolui em passos fixos, independente do navegador; RNG com seed facilita testes locais sem compromisso de replay/rollback entre plataformas. Entradas humanas e decisões de bots convergem no mesmo contrato. A renderização lê snapshots, anima saltos e consome eventos para feedback; nunca calcula pontuação nem aplica regras.
 

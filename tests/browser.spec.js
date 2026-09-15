@@ -153,6 +153,11 @@ test("IT-006: Canvas failure stops game; denied clipboard exposes diagnostic tex
   await expect(page.locator("#fatal-message")).toContainText(
     "Não foi possível iniciar a arena",
   );
+  await expect(page.locator("#fatal-code")).toContainText("CANVAS_UNAVAILABLE");
+  await expect(page.locator("#fatal-message")).toContainText("Canvas 2D");
+  await page.locator("#fatal-reload").click();
+  await page.waitForLoadState();
+  await expect(page.locator("#fatal")).toBeVisible();
   await page.locator("#fatal-copy").click();
   await expect(page.locator("#diagnostic-dialog")).toBeVisible();
   const json = JSON.parse(await page.locator("#diagnostic").inputValue());
@@ -226,7 +231,7 @@ test("E2E-007: hard difficulty survives rematch, new visit defaults to standard"
   const original = await (await request.get("/game-design.json")).json();
   const config = structuredClone(original);
   config.round.durationMs = 10000;
-  config.round.countdownMs = 0;
+  config.round.countdownMs = 3000;
   await writeBalance(request, config);
   try {
     await page.clock.install();
@@ -236,7 +241,8 @@ test("E2E-007: hard difficulty survives rematch, new visit defaults to standard"
     await page.locator("#start").click();
     await expect(page.locator("#arena")).toBeVisible();
     await expect(page.locator("#mode-label")).toContainText("Difícil");
-    await page.clock.runFor(10500);
+    await expect(page.locator("#timer")).toHaveText("0:10");
+    await page.clock.runFor(13500);
     await expect(page.locator("#result")).toBeVisible();
     await page.getByRole("button", { name: "Jogar novamente" }).click();
     await expect(page.locator("#arena")).toBeVisible();
@@ -330,4 +336,42 @@ test("IT-002 countdown: pause/settings/resume completes countdown with reduced m
   await page.clock.runFor(4000);
   await expect(page.locator("#countdown")).toBeHidden();
   await expect(page.locator("#timer")).not.toHaveText("1:30");
+});
+
+test("E2E-005 entry: initial focus, explicit roles and sprite fallback remain usable", async ({
+  page,
+}) => {
+  await page.route("**/assets/characters.png", (route) => route.abort());
+  await page.goto("/");
+  await expect(page.locator("#play")).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.getByRole("radio", { name: /Dam/ }).check();
+  await expect(page.locator('[data-role="dam"]')).toHaveText("Você");
+  await expect(page.locator('[data-role="ghork"]')).toHaveText("Bot");
+  await expect(page.locator('[data-role="lala"]')).toHaveText("Bot");
+  await expect(page.locator('[data-role="drull"]')).toHaveText("Bot");
+  await page.screenshot({
+    path: ".compozy/tasks/tumulto-v1/evidence/review/fallback-roles.png",
+  });
+});
+test("IT-006 unexpected runtime error shows stable code and recovery", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    CanvasRenderingContext2D.prototype.clearRect = () => {
+      throw new Error("controlled-render-failure");
+    };
+  });
+  await page.goto("/");
+  await expect(page.locator("#fatal")).toBeVisible();
+  await expect(page.locator("#fatal-code")).toContainText(
+    "UNEXPECTED_GAME_ERROR",
+  );
+  await expect(page.locator("#fatal-message")).toContainText(
+    "Recarregue ou volte ao menu",
+  );
+  await expect(page.locator("#fatal-reload")).toBeEnabled();
+  await page.screenshot({
+    path: ".compozy/tasks/tumulto-v1/evidence/review/runtime-error.png",
+  });
 });

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Planejar QA integrada e reconciliar evidências"
 type: qa-report
 complexity: medium

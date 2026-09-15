@@ -1,4 +1,9 @@
-import { enabledItems } from "../game/effects.js";
+import {
+  enabledItems,
+  items,
+  itemLabels,
+  itemSymbols,
+} from "../content/items.js";
 import {
   createMatch,
   stepMatch,
@@ -10,12 +15,7 @@ import {
 } from "../game/engine.js";
 import { createBotMemory, decideBot } from "../ai/bots.js";
 import { createKeyboard } from "../input/keyboard.js";
-import {
-  renderArena,
-  drawAvatar,
-  itemLabels,
-  itemSymbols,
-} from "../render/arena.js";
+import { renderArena, drawAvatar } from "../render/arena.js";
 import { characters, character } from "../content/characters.js";
 import { loadConfig } from "./config.js";
 
@@ -55,10 +55,10 @@ export function createApp(
   const enoughSpace = () => innerWidth >= 960 && innerHeight >= 600;
   root.innerHTML = `<header class="game-header"><a href="#" id="home">TUMULTO</a><span class="world">UMA BRINCADEIRA NA ÁUREA</span><button id="preferences">Preferências</button></header>
   <main><section id="menu" class="screen menu-layout"><div class="hero"><p class="eyebrow">QUATRO AMIGOS. UM PÁTIO.</p><h1>O chão é de<br>quem chegar<br><em>primeiro.</em></h1><p>Salte, marque suas runas e encontre um selo para transformar território em pontos.</p><button class="primary big" id="play">Jogar <span aria-hidden="true">↗</span></button><p class="micro">Um humano · três bots · teclado</p></div><div class="menu-art"><canvas id="preview" width="600" height="600" aria-label="Prévia da arena 8 por 8"></canvas><p>Nem toda marca está garantida.<br><strong>Converta antes que um amigo a tome.</strong></p></div></section>
-  <section id="setup" class="screen" hidden><div class="section-heading"><p class="eyebrow">ANTES DA CONFUSÃO</p><h1>Escolha seu amigo.</h1><p>Todos têm a mesma velocidade e as mesmas possibilidades.</p></div><fieldset class="characters"><legend class="sr-only">Personagem</legend>${characters.map((c) => `<label class="character-card" style="--player:${c.color}"><input type="radio" name="character" value="${c.id}" ${c.id === selected ? "checked" : ""}><canvas width="120" height="140" data-portrait="${c.id}" aria-hidden="true"></canvas><strong>${c.name} <span>${c.symbol}</span></strong><small>${c.phrase}</small></label>`).join("")}</fieldset><div class="setup-bottom"><div><h2>Marque. Converta. Dispute.</h2><ol><li>Salte para marcar runas.</li><li>Colete um selo para converter suas runas em pontos.</li><li>Seus rivais podem tomar marcas ainda não convertidas.</li></ol><p class="keys"><kbd>WASD</kbd> / <kbd>↑ ↓ ← →</kbd> mover · <kbd>Espaço</kbd> disparar · <kbd>Esc</kbd> pausar</p></div><div class="setup-actions"><label for="difficulty">Dificuldade dos bots</label><select id="difficulty"><option value="standard">Padrão</option><option value="hard">Difícil</option></select><p id="round-description">Pátio da Áurea · 90 segundos</p><button id="start" class="primary big">Começar</button><button id="back">Voltar</button></div></div><p id="config-error" role="alert"></p></section>
+  <section id="setup" class="screen" hidden><div class="section-heading"><p class="eyebrow">ANTES DA CONFUSÃO</p><h1>Escolha seu amigo.</h1><p>Todos têm a mesma velocidade e as mesmas possibilidades.</p></div><fieldset class="characters"><legend class="sr-only">Personagem</legend>${characters.map((c) => `<label class="character-card" style="--player:${c.color}"><input type="radio" name="character" value="${c.id}" ${c.id === selected ? "checked" : ""}><canvas width="120" height="140" data-portrait="${c.id}" aria-hidden="true"></canvas><strong>${c.name} <span>${c.symbol}</span></strong><small>${c.phrase}</small><span data-role="${c.id}">${c.id === selected ? "Você" : "Bot"}</span></label>`).join("")}</fieldset><div class="setup-bottom"><div><h2>Marque. Converta. Dispute.</h2><ol><li>Salte para marcar runas.</li><li>Colete um selo para converter suas runas em pontos.</li><li>Seus rivais podem tomar marcas ainda não convertidas.</li></ol><p class="keys"><kbd>WASD</kbd> / <kbd>↑ ↓ ← →</kbd> mover · <kbd>Espaço</kbd> disparar · <kbd>Esc</kbd> pausar</p></div><div class="setup-actions"><label for="difficulty">Dificuldade dos bots</label><select id="difficulty"><option value="standard">Padrão</option><option value="hard">Difícil</option></select><p id="round-description">Pátio da Áurea · 90 segundos</p><button id="start" class="primary big">Começar</button><button id="back">Voltar</button></div></div><p id="config-error" role="alert"></p></section>
   <section id="arena" class="screen" hidden><div class="match-heading"><span id="mode-label">Pátio da Áurea</span><strong id="timer" aria-label="Tempo restante">1:30</strong><button id="pause">Pausar</button></div><div class="scoreboard" id="scoreboard"></div><div class="play-layout"><div class="board-wrap"><canvas id="board" width="640" height="640" tabindex="0" aria-label="Arena de Tumulto. Use WASD ou setas para mover e Espaço para disparar."></canvas><div id="countdown" aria-live="polite" hidden></div></div><aside class="match-guide" tabindex="0" aria-label="Guia de itens e controles"><p class="eyebrow">SEU PRÓXIMO PONTO</p><h2>Marcas ainda<br>podem mudar<br>de dono.</h2><p>Encontre um <strong>Selo ◎</strong> para garantir seus pontos.</p><div id="item-guide"><p>◎ Selo · converte runas</p></div><div class="keys"><kbd>WASD</kbd> mover<br><kbd>Espaço</kbd> disparar<br><kbd>Esc</kbd> pausar</div></aside></div><p id="event-status" class="sr-only" aria-live="polite"></p></section>
   <section id="result" class="screen result-layout" hidden><p class="eyebrow">A POEIRA BAIXOU</p><h1 id="result-title" aria-live="polite"></h1><p id="result-detail"></p><ol id="ranking"></ol><p>Runas não convertidas ficam para trás. Os pontos estão garantidos.</p><div class="result-actions"><button id="rematch" class="primary big">Jogar novamente</button><button id="result-menu">Voltar ao menu</button></div></section>
-  <section id="fatal" class="screen" hidden><h1>A partida foi interrompida.</h1><p id="fatal-message"></p><button id="fatal-copy">Copiar diagnóstico</button><button id="fatal-menu">Voltar ao menu</button></section>
+  <section id="fatal" class="screen" hidden><h1>A partida foi interrompida.</h1><p id="fatal-message"></p><p id="fatal-code"></p><button id="fatal-reload" class="primary">Recarregar</button><button id="fatal-copy">Copiar diagnóstico</button><button id="fatal-menu">Voltar ao menu</button></section>
   <p id="viewport-warning" role="status" hidden>Amplie a janela para jogar. Tumulto precisa de pelo menos 960 × 600 pixels.</p><p id="device-warning" hidden>Esta versão foi feita para computador com teclado.</p></main>
   <footer class="game-footer"><span>Com personagens de <em>Ghork e a Prova de Fogo</em>, de Edney A. Reis Filho.</span><span>PROTÓTIPO · ARTE PROVISÓRIA</span></footer>
   <dialog id="pause-dialog" aria-label="Partida pausada"><p class="eyebrow">UMA PAUSA NA BRINCADEIRA</p><h2>Partida pausada</h2><p id="pause-reason"></p><div class="dialog-actions"><button id="continue" class="primary">Continuar</button><button id="pause-preferences">Preferências</button><button id="copy">Copiar diagnóstico</button><button id="exit">Voltar ao menu</button></div></dialog>
@@ -68,24 +68,10 @@ export function createApp(
   const $ = (id) => root.querySelector(`#${id}`);
   const on = (id, fn) =>
     $(id).addEventListener("click", fn, { signal: lifecycle.signal });
-  const itemHelp = {
-    seal: "Converte suas runas em pontos.",
-    impulse: "Acelera os saltos.",
-    spark: "Uma centelha na direção em que você olha.",
-    flow: "Pinta uma linha; a seta gira.",
-    flowDouble: "Pinta nos dois sentidos da seta.",
-    flowCross: "Pinta linha e coluna.",
-    sparkCross: "Dispara nas quatro direções.",
-    beam: "Atinge rivais em linha reta.",
-    lock: "Protege suas runas contra rivais.",
-    tnt: "Arma uma explosão ao pisar.",
-    nitro: "Explode imediatamente ao pisar.",
-    mushroom: "Deixa seus saltos mais lentos.",
-  };
   $("item-guide").innerHTML = ["seal", ...enabledItems]
     .map(
       (kind) =>
-        `<p><strong>${itemSymbols[kind]} ${itemLabels[kind]}</strong> · ${itemHelp[kind]}</p>`,
+        `<p><strong>${itemSymbols[kind]} ${itemLabels[kind]}</strong> · ${items[kind].help}</p>`,
     )
     .join("");
   const keyboard = createKeyboard(document, {
@@ -200,6 +186,7 @@ export function createApp(
       keyboard.clear();
       $("board").focus();
       setupScoreboard();
+      setTimer(config.round.durationMs / 1000);
       if (countdown === 0) beginMatch();
     } catch (error) {
       if (request !== requestGeneration) return;
@@ -245,6 +232,11 @@ export function createApp(
     $("mode-label").textContent =
       `Pátio da Áurea · ${difficulty === "hard" ? "Difícil" : "Padrão"}`;
   }
+  function setTimer(seconds) {
+    const remaining = Math.max(0, Math.ceil(seconds));
+    $("timer").textContent =
+      `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
+  }
   function updateHUD() {
     if (!match) return;
     const remaining = Math.max(
@@ -254,8 +246,7 @@ export function createApp(
           config.simulation.tickRate,
       ),
     );
-    $("timer").textContent =
-      `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
+    setTimer(remaining);
     for (const p of match.players) {
       $(`score-${p.id}`).textContent = p.score;
       $(`pending-${p.id}`).textContent = pendingCount(match, p.id);
@@ -325,8 +316,10 @@ export function createApp(
     show("fatal");
     $("fatal-message").textContent =
       runtimeError === "CANVAS_UNAVAILABLE"
-        ? "Não foi possível iniciar a arena neste navegador."
-        : runtimeError;
+        ? "Não foi possível iniciar a arena neste navegador. Recarregue ou use um navegador com suporte a Canvas 2D."
+        : "Algo interrompeu a partida. Recarregue ou volte ao menu para tentar novamente.";
+    $("fatal-code").textContent =
+      `Código: ${runtimeError === "CANVAS_UNAVAILABLE" ? "CANVAS_UNAVAILABLE" : "UNEXPECTED_GAME_ERROR"}`;
     $("fatal-menu").focus();
   }
   async function copy() {
@@ -457,6 +450,16 @@ export function createApp(
       if (phase !== "error") fail(error);
     }
   }
+  for (const radio of root.querySelectorAll("[name=character]")) {
+    radio.addEventListener(
+      "change",
+      () => {
+        for (const role of root.querySelectorAll("[data-role]"))
+          role.textContent = role.dataset.role === radio.value ? "Você" : "Bot";
+      },
+      { signal: lifecycle.signal },
+    );
+  }
   on("play", prepare);
   on("start", start);
   on("back", menu);
@@ -483,6 +486,7 @@ export function createApp(
   on("confirm-exit", menu);
   on("result-menu", menu);
   on("fatal-menu", menu);
+  on("fatal-reload", () => location.reload());
   on("copy", copy);
   on("fatal-copy", copy);
   on("diagnostic-close", () => $("diagnostic-dialog").close());
@@ -506,6 +510,7 @@ export function createApp(
     signal: lifecycle.signal,
   });
   updateSpace();
+  if (!initialState) $("play").focus();
   configLoader()
     .then((loaded) => {
       if (requestGeneration === 0 && phase === "menu") {

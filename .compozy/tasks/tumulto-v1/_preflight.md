@@ -4,7 +4,7 @@
 
 - ADRs 003/004/005 vinculadas. TypeScript e persistência de preferências removidos das instruções ativas; JSON autoral é exceção explícita solicitada.
 - Itens ampliados especificados em `_items.md`, com interações de cadeado/fluxos, armas/impactos e perigos. Efeitos não eliminatórios são default de playtest registrado, após autorização para prosseguir sem perguntas.
-- JSON raiz é fonte de parâmetros; schema/UI/server compartilhados, save real no disco, revisão e atomicidade definidos. A integração ainda será concluída em task_05.
+- JSON raiz é fonte de parâmetros; schema/UI/server compartilhados, save real no disco, revisão e atomicidade definidos. A integração foi concluída e verificada na task_05.
 - Tasks 01–03 preservam entregas básicas, 04 adiciona recursos, 05 configura/dificuldade/editor, 06–07 formam QA do loop. Grafo linear acíclico 01→02→03→04→05→06→07, sem dependência invertida.
 - Testes atribuídos a um owner; UT-018 retirado sem renumerar. Novas histórias US-012–017 mapeadas. QA-M01 pertence à task_07.
 - Verificação de links locais e títulos/frontmatter executada: OK.

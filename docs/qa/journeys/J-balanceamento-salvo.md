@@ -21,6 +21,6 @@ journey:
   actions: [Painel → edição → salvar → reabrir → próxima partida]
   goal: {observable: "Nova leitura mostra o valor salvo e outra aba não sobrescreve sem conflito"}
   true_end_state: Nova leitura mostra o valor salvo e outra aba não sobrescreve sem conflito
-  abandonment: [Fechar ou voltar sem confirmação; nova visita respeita persistência documentada]
+  abandonment: [Fechar ou voltar sem confirmação; nova visita reinicia partida e preferências; apenas game-design.json salvo permanece no disco]
   crosses: [UI, motor, JSON local]
 ```

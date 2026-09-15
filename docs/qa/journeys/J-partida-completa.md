@@ -21,6 +21,6 @@ journey:
   actions: [Menu → seleção → movimento e conversão → resultado → revanche]
   goal: {observable: "Resultado com quatro participantes e revanche limpa preservando escolhas"}
   true_end_state: Resultado com quatro participantes e revanche limpa preservando escolhas
-  abandonment: [Fechar ou voltar sem confirmação; nova visita respeita persistência documentada]
+  abandonment: [Fechar ou voltar sem confirmação; nova visita reinicia partida e preferências; apenas game-design.json salvo permanece no disco]
   crosses: [UI, motor, JSON local]
 ```
