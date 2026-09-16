@@ -2,6 +2,10 @@
 
 Pesquisa realizada em 15/09/2026, organizada como questionário para preencher.
 
+## Evoluções identificadas no playtest
+
+- [Três modos de jogo e captura por contorno](modos-de-jogo-e-captura-por-contorno.md): diferença em relação às variantes originais; planeja Trilha de Runas (padrão), Círculos da Áurea e Domínio Rúnico para implementação futura e comparação de diversão.
+
 ## Decisões aceitas
 
 - [ADR-003 — Protótipo solo contra bots como escopo vigente](../docs/adr/adr-003-prototipo-solo-contra-bots.md): um humano contra três bots. Todas as decisões devem considerar essa experiência até a ADR ser substituída. A migração para party online é uma intenção para depois da aprovação do protótipo.

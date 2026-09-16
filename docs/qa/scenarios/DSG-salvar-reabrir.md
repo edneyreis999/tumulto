@@ -11,8 +11,8 @@ bug_ids:
 fix_status:
 retest_status:
 fix_commits:
-evidence: docs/qa/evidence/2026-09-15-tumulto-v1/
-last_report: docs/qa/reports/2026-09-15-tumulto-v1.md
+evidence: docs/qa/evidence/2026-09-16-game-design/
+last_report: docs/qa/reports/2026-09-16-game-design.md
 overlaps:
 ---
 
